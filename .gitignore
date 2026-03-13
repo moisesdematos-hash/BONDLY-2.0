@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+dist/
+build/
+.dart_tool/
+.pub-cache/
+.pub/
+.packages
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Backend specific
+bondly/backend/node_modules/
+bondly/backend/dist/
+
+# Frontend specific
+bondly/frontend/.dart_tool/
+bondly/frontend/build/
+bondly/frontend/.flutter-plugins
+bondly/frontend/.flutter-plugins-dependencies

@@ -1,0 +1,28 @@
+name: bondly
+description: Bondly - AI Relationship Coach
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  riverpod: ^2.3.6
+  flutter_riverpod: ^2.3.6
+  supabase_flutter: ^1.10.15
+  intl: ^0.18.1
+  google_fonts: ^5.1.0
+  framer_motion: ^0.0.1+1 # Flutter equivalent or similar animation packages
+  lucide_icons: ^0.224.0
+  fl_chart: ^0.63.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
