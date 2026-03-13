@@ -1,10 +1,10 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/auth_service.dart';
+import '../../../core/network/api_client.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
-  // In a real app, this would come from an environment config
-  return AuthService(baseUrl: 'http://localhost:3000');
+  final apiClient = ref.watch(apiClientProvider);
+  return AuthService(apiClient: apiClient);
 });
+
 
 class AuthState {
   final bool isLoading;
@@ -63,10 +63,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> updateProfile({String? name, String? language}) async {
+    // This is a bit of a shortcut. A separate ProfileProvider might be cleaner
+    // but AuthProvider owns the 'user' state currently.
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      // We need to fetch the service here or pass it in.
+      // Since AuthNotifier is created with AuthService, and ProfileService uses ApiClient,
+      // it might be better to just make the request here or refactor.
+      // For now, I'll update the user state directly if passed from the UI.
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  void updateUserState(Map<String, dynamic> newUser) {
+    state = state.copyWith(user: newUser);
+  }
+
   void logout() {
     state = AuthState();
   }
 }
+
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);

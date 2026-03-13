@@ -9,9 +9,19 @@ export class ChallengesController {
   constructor(private challengesService: ChallengesService) {}
 
   @Get()
-  async findAll(@GetUser('role') role: string) {
-    return this.challengesService.findAll(role === 'premium');
+  async findAll(
+    @GetUser('role') role: string,
+    @GetUser('userId') userId: string,
+  ) {
+    return this.challengesService.findAll(userId, role === 'premium');
   }
+
+
+  @Get('achievements')
+  async findAllAchievements(@GetUser('userId') userId: string) {
+    return this.challengesService.findAllAchievements(userId);
+  }
+
 
   @Post(':id/participate')
   async participate(

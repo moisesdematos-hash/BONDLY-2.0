@@ -1,17 +1,16 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import '../../../core/network/api_client.dart';
 
 class AuthService {
-  final String baseUrl;
+  final ApiClient apiClient;
 
-  AuthService({required this.baseUrl});
+  AuthService({required this.apiClient});
 
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
+    final response = await apiClient.post('/auth/login', {
+      'email': email,
+      'password': password,
+    });
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -26,16 +25,12 @@ class AuthService {
     required String password,
     String language = 'pt',
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-        'language': language,
-      }),
-    );
+    final response = await apiClient.post('/auth/register', {
+      'name': name,
+      'email': email,
+      'password': password,
+      'language': language,
+    });
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -44,3 +39,4 @@ class AuthService {
     }
   }
 }
+

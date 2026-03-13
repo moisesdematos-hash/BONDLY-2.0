@@ -40,4 +40,31 @@ export class UsersService {
 
     return data;
   }
+
+  async findById(id: string) {
+
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, updateData: { name?: string; language?: string }) {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('users')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
 }
+

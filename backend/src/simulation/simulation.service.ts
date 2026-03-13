@@ -16,8 +16,8 @@ export class SimulationService {
     language: string;
     isPremium: boolean;
   }) {
-    // 1. Get AI Feedback
-    const aiFeedback = await this.aiService.getCoachSuggestion({
+    // 1. Get AI specialized Simulation Feedback
+    const aiFeedback = await this.aiService.getSimulationFeedback({
       message: context.message,
       relationshipType: context.relationshipType,
       isPremium: context.isPremium,
@@ -45,6 +45,7 @@ export class SimulationService {
       ...aiFeedback,
     };
   }
+
 
   async getHistory(userId: string) {
     const supabase = this.supabaseService.getClient();

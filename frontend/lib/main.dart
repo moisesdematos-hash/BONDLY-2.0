@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/theme/bondly_theme.dart';
+import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/register_screen.dart';
+import 'features/dashboard/presentation/dashboard_screen.dart';
+import 'features/questions/presentation/questions_screen.dart';
+import 'features/checkin/presentation/checkin_screen.dart';
+import 'features/challenges/presentation/challenges_screen.dart';
+import 'features/ai_coach/presentation/ai_coach_screen.dart';
+import 'features/simulation/presentation/simulation_screen.dart';
+import 'features/chat/presentation/chat_screen.dart';
+import 'features/profile/presentation/profile_screen.dart';
+import 'features/relationship/presentation/relationship_setup_screen.dart';
+import 'features/memory_wall/presentation/memory_wall_screen.dart';
+import 'features/dates/presentation/date_planner_screen.dart';
 
-void main() {
-  runApp(
-    const ProviderScope(
-      child: BondlyApp(),
-    ),
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Supabase (using placeholder credentials, would be env vars)
+  await Supabase.initialize(
+    url: 'YOUR_SUPABASE_URL',
+    anonKey: 'YOUR_SUPABASE_ANON_KEY',
   );
+
+  runApp(const ProviderScope(child: BondlyApp()));
 }
 
 class BondlyApp extends StatelessWidget {
@@ -17,48 +37,24 @@ class BondlyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bondly',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-      ),
-      home: const DashboardScreen(),
-    );
-  }
-}
+      debugShowCheckedModeBanner: false,
+      theme: BondlyTheme.darkTheme,
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+        '/relationship-setup': (context) => const RelationshipSetupScreen(),
+        '/questions': (context) => const QuestionsScreen(),
+        '/checkin': (context) => const CheckinScreen(),
+        '/challenges': (context) => const ChallengesScreen(),
+        '/ai-coach': (context) => const AiCoachScreen(),
+        '/simulation': (context) => const SimulationScreen(),
+        '/chat': (context) => const BondlyChatScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/memory-wall': (context) => const MemoryWallScreen(),
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bondly AI Coach'),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.favorite, size: 80, color: Colors.pinkAccent),
-            SizedBox(height: 20),
-            Text(
-              'Bem-vindo ao Bondly',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Sua IA especializada em fortalecer conexões.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
+      },
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query, Param } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
@@ -8,12 +8,19 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 export class QuestionsController {
   constructor(private questionsService: QuestionsService) {}
 
-  @Get('daily')
+  @Get('daily/:relationshipId')
   async getDaily(
+    @Param('relationshipId') relationshipId: string,
     @Query('relationshipType') relationshipType: string,
     @Query('language') language: string,
+    @GetUser('userId') userId: string,
   ) {
-    return this.questionsService.getDailyQuestion(relationshipType, language || 'pt');
+    return this.questionsService.getDailyQuestion(
+      userId,
+      relationshipId,
+      relationshipType,
+      language || 'pt'
+    );
   }
 
   @Post('answer')

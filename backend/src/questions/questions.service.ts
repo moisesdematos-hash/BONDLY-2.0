@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
+import { GardenService } from '../garden/garden.service';
+
 @Injectable()
 export class QuestionsService {
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private gardenService: GardenService,
+  ) {}
 
-  async getDailyQuestion(relationshipType: string, language: string) {
+
+  async getDailyQuestion(userId: string, relationshipId: string, relationshipType: string, language: string) {
     const supabase = this.supabaseService.getClient();
 
-    // In a real scenario, this would check the current date.
-    // For MVP, we'll fetch a random question for this type and language.
-    const { data, error } = await supabase
+    // 1. Get current daily question
+    const { data: question, error: questionError } = await supabase
       .from('daily_questions')
       .select('*')
       .eq('relationship_type', relationshipType)
@@ -18,20 +23,45 @@ export class QuestionsService {
       .limit(1)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error;
+    if (questionError && questionError.code !== 'PGRST116') throw questionError;
     
-    // If no question found, returned a fallback
-    if (!data) {
+    if (!question) {
       return {
-        id: null,
+        id: 'fallback-01',
         question_text: language === 'pt' 
-          ? 'Qual foi o melhor momento que passaram juntos hoje?' 
-          : 'What was the best moment you spent together today?',
+          ? 'Qual é a sua lembrança favorita de nós dois ultimamente?' 
+          : 'What is your favorite recent memory of us?',
         relationship_type: relationshipType,
+        user_answered: false,
+        partner_answered: false,
       };
     }
 
-    return data;
+
+    // 2. Check user's answer
+    const { data: userAnswer } = await supabase
+      .from('daily_answers')
+      .select('*')
+      .eq('question_id', question.id)
+      .eq('user_id', userId)
+      .single();
+
+    // 3. Check partner's answer
+    const { data: partnerAnswer } = await supabase
+      .from('daily_answers')
+      .select('*')
+      .eq('question_id', question.id)
+      .eq('relationship_id', relationshipId)
+      .neq('user_id', userId)
+      .single();
+
+    return {
+      ...question,
+      user_answered: !!userAnswer,
+      user_answer_text: userAnswer?.answer_text,
+      partner_answered: !!partnerAnswer,
+      partner_answer: (!!userAnswer && !!partnerAnswer) ? partnerAnswer.answer_text : null,
+    };
   }
 
   async submitAnswer(questionId: string, userId: string, relationshipId: string, answerText: string) {
@@ -52,6 +82,9 @@ export class QuestionsService {
 
     if (error) throw error;
 
+    await this.gardenService.addXp(relationshipId, 50);
+
     return data;
   }
+
 }

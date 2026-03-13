@@ -10,6 +10,14 @@ import { QuestionsModule } from './questions/questions.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { SimulationModule } from './simulation/simulation.module';
 import { ChatModule } from './chat/chat.module';
+import { GardenModule } from './garden/garden.module';
+import { MemoriesModule } from './memories/memories.module';
+import { DatesModule } from './dates/dates.module';
+import { NudgesModule } from './nudges/nudges.module';
+
+
+
+
 
 @Module({
   imports: [
@@ -24,6 +32,14 @@ import { ChatModule } from './chat/chat.module';
     ChallengesModule,
     SimulationModule,
     ChatModule,
+    GardenModule,
+    MemoriesModule,
+    DatesModule,
+    NudgesModule,
+
+
+
+
   ],
 })
 export class AppModule {}

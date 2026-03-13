@@ -64,7 +64,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ref.read(authProvider.notifier).login(
                             _emailController.text,
                             _passwordController.text,
-                          );
+                          ).then((_) {
+                            if (mounted && ref.read(authProvider).token != null) {
+                              Navigator.pushReplacementNamed(context, '/setup');
+                            }
+                          });
                     },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -86,10 +90,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             TextButton(
               onPressed: () {
-                // Navegar para registro
+                Navigator.pushNamed(context, '/register');
               },
               child: const Text('Não tem uma conta? Cadastre-se'),
             ),
+
           ],
         ),
       ),

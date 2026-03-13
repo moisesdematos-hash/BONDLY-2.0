@@ -21,4 +21,13 @@ export class RelationshipsController {
   async findAll(@GetUser('userId') userId: string) {
     return this.relationshipsService.findAllForUser(userId);
   }
+
+  @Post('join')
+  async join(
+    @Body('inviteCode') inviteCode: string,
+    @GetUser('userId') userId: string,
+  ) {
+    return this.relationshipsService.joinRelationship(inviteCode, userId);
+  }
 }
+

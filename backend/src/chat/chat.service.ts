@@ -12,8 +12,8 @@ export class ChatService {
   async sendMessage(userId: string, relationshipId: string, content: string) {
     const supabase = this.supabaseService.getClient();
 
-    // 1. Analyze Sentiment
-    const sentiment = await this.aiService.analyzeSentiment(content);
+    // 1. Analyze Sentiment with more detail
+    const analysis = await this.aiService.analyzeSentiment(content);
 
     // 2. Save Message
     const { data, error } = await supabase
@@ -23,7 +23,11 @@ export class ChatService {
           sender_id: userId,
           relationship_id: relationshipId,
           content: content,
-          sentiment_score: sentiment.score,
+          sentiment_score: analysis.score,
+          meta: {
+            label: analysis.label,
+            tip: analysis.score < 0.4 ? 'Tente expressar sua necessidade de forma mais suave...' : null,
+          }
         },
       ])
       .select()
@@ -31,11 +35,9 @@ export class ChatService {
 
     if (error) throw error;
 
-    return {
-      ...data,
-      sentiment_label: sentiment.label,
-    };
+    return data;
   }
+
 
   async getMessages(relationshipId: string, limit: number = 50) {
     const supabase = this.supabaseService.getClient();

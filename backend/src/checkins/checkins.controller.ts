@@ -22,8 +22,17 @@ export class CheckinsController {
     return this.checkinsService.findAllForRelationship(relationshipId);
   }
 
+  @Get('partner-status/:id')
+  async getPartnerStatus(
+    @Param('id') relationshipId: string,
+    @GetUser('userId') userId: string,
+  ) {
+    return this.checkinsService.getPartnerStatus(relationshipId, userId);
+  }
+
   @Get('history')
   async getPersonalHistory(@GetUser('userId') userId: string) {
     return this.checkinsService.findPersonalHistory(userId);
   }
 }
+
