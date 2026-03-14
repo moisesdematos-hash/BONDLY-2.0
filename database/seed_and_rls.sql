@@ -157,3 +157,25 @@ USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relatio
 
 CREATE POLICY "Users can delete agreements" ON relationship_agreements FOR DELETE
 USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relationship_agreements.relationship_id AND user_id = auth.uid()));
+
+-- 7. Gratitude Entries (Diário de Gratidão por Voz)
+CREATE TABLE IF NOT EXISTS gratitude_entries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  relationship_id UUID NOT NULL REFERENCES relationships(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  audio_url TEXT,
+  transcription TEXT,
+  sentiment_score DECIMAL DEFAULT 0.5,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE gratitude_entries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view relationship gratitude entries" ON gratitude_entries FOR SELECT
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = gratitude_entries.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can insert gratitude entries" ON gratitude_entries FOR INSERT
+WITH CHECK (auth.uid() = user_id AND EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = gratitude_entries.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can delete own gratitude entries" ON gratitude_entries FOR DELETE
+USING (auth.uid() = user_id);

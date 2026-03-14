@@ -216,6 +216,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           color: const Color(0xFF14B8A6),
           route: '/agreements',
         ),
+        _buildActionCard(
+          context,
+          title: 'Gratidão',
+          icon: Icons.mic_none_rounded,
+          color: const Color(0xFFF472B6),
+          route: '/gratitude',
+        ),
       ],
     );
 

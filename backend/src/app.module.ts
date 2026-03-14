@@ -17,6 +17,7 @@ import { NudgesModule } from './nudges/nudges.module';
 import { PaymentsModule } from './payments/payments.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { AgreementsModule } from './agreements/agreements.module';
+import { GratitudeModule } from './gratitude/gratitude.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AgreementsModule } from './agreements/agreements.module';
     PaymentsModule,
     WishlistsModule,
     AgreementsModule,
+    GratitudeModule,
   ],
 })
 export class AppModule {}

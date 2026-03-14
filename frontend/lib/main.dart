@@ -19,6 +19,7 @@ import 'features/memory_wall/presentation/memory_wall_screen.dart';
 import 'features/dates/presentation/date_planner_screen.dart';
 import 'features/wishlist/presentation/wishlist_screen.dart';
 import 'features/agreements/presentation/agreements_screen.dart';
+import 'features/gratitude/presentation/gratitude_screen.dart';
 
 
 
@@ -58,6 +59,7 @@ class BondlyApp extends StatelessWidget {
         '/dates': (context) => const DatePlannerScreen(),
         '/wishlist': (context) => const WishlistScreen(),
         '/agreements': (context) => const AgreementsScreen(),
+        '/gratitude': (context) => const GratitudeScreen(),
       },
     );
   }

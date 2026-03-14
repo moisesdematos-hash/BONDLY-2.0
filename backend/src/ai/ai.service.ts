@@ -301,6 +301,27 @@ export class AiService implements OnModuleInit {
       throw new Error('Falha na comunicação com a API de IA.');
     }
   }
+
+  async transcribeAudio(fileBuffer: Buffer, fileName: string): Promise<string> {
+    if (!this.openai) {
+      return "[MODO SIMULADO] Estou muito grato por te ter na minha vida e por todo o apoio que me dás todos os dias.";
+    }
+
+    try {
+      // Whisper expects a file-like object
+      const file = await OpenAI.toFile(fileBuffer, fileName);
+      
+      const transcription = await this.openai.audio.transcriptions.create({
+        file: file,
+        model: 'whisper-1',
+      });
+
+      return transcription.text;
+    } catch (error) {
+      console.error('Erro no AI Service transcribeAudio:', error);
+      throw new Error('Falha na transcrição de áudio.');
+    }
+  }
 }
 
 
