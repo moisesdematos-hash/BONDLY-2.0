@@ -5,14 +5,12 @@ import '../../relationship/domain/relationship_provider.dart';
 import '../../challenges/domain/challenges_provider.dart';
 import '../../questions/domain/questions_provider.dart';
 import '../../checkin/domain/checkins_provider.dart';
-import '../../memory_wall/domain/memory_provider.dart';
 import '../../garden/domain/garden_provider.dart';
 import '../../garden/presentation/garden_widget.dart';
 import '../../nudges/domain/nudge_provider.dart';
 import '../../nudges/presentation/nudge_widget.dart';
 import '../../../core/theme/bondly_theme.dart';
-
-
+import '../../../core/widgets/bondly_widgets.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -25,6 +23,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _refreshData();
+  }
+
+  void _refreshData() {
     Future.microtask(() {
       final relationshipId = ref.read(relationshipProvider).selectedRelationship?['id'];
       if (relationshipId != null) {
@@ -34,16 +36,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ref.read(gardenProvider.notifier).fetchStats(relationshipId);
         ref.read(nudgeProvider.notifier).fetchNudge(relationshipId);
       }
-
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final relationshipState = ref.watch(relationshipProvider);
-    final challengesState = ref.watch(challengesProvider);
     final questionsState = ref.watch(questionsProvider);
     final checkinsState = ref.watch(checkinsProvider);
 
@@ -52,52 +50,42 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       appBar: AppBar(
         title: Text(
           'Olá, ${authState.user?['name']?.split(' ')[0] ?? "Bondly"}! ✨',
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.person_outline, color: Colors.white),
-              onPressed: () => Navigator.pushNamed(context, '/profile'),
-            ),
-          ),
+          _buildProfileButton(context),
         ],
       ),
       body: Container(
         decoration: const BoxDecoration(gradient: BondlyTheme.mainGradient),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const GardenWidget(),
-                const SizedBox(height: 16),
-                const NudgeWidget(),
-                const SizedBox(height: 16),
-                _buildDynamicStatus(questionsState, checkinsState),
-
-
-                const SizedBox(height: 32),
-                _buildSectionLabel('Ações Rápidas'),
-                const SizedBox(height: 16),
-                _buildActionGrid(context),
-                const SizedBox(height: 40),
-                _buildSectionLabel('Desafios da Semana'),
-                const SizedBox(height: 16),
-                _buildChallengeSection(challengesState),
-                const SizedBox(height: 40),
-                _buildAICoachTeaser(context),
-                const SizedBox(height: 20),
-                _buildDatePlannerTeaser(context),
-                const SizedBox(height: 48),
-
-              ],
+          child: RefreshIndicator(
+            onRefresh: () async => _refreshData(),
+            color: BondlyTheme.accent,
+            backgroundColor: BondlyTheme.surface,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Hero(tag: 'garden-view', child: GardenWidget()),
+                  const SizedBox(height: 16),
+                  const NudgeWidget(),
+                  const SizedBox(height: 24),
+                  _buildDynamicStatus(questionsState, checkinsState),
+                  const SizedBox(height: 40),
+                  _buildSectionHeader('Menu de Conexão'),
+                  const SizedBox(height: 16),
+                  _buildActionGrid(context),
+                  const SizedBox(height: 48),
+                  _buildSectionHeader('O Vosso Próximo Passo'),
+                  const SizedBox(height: 16),
+                  _buildChallengeSection(),
+                  const SizedBox(height: 24),
+                  _buildPremiumExperience(context),
+                  const SizedBox(height: 48),
+                ],
+              ),
             ),
           ),
         ),
@@ -105,15 +93,39 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildSectionLabel(String label) {
-    return Text(
-      label.toUpperCase(),
-      style: TextStyle(
-        color: Colors.white.withOpacity(0.4),
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1.2,
+  Widget _buildProfileButton(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BondlyTheme.glassDecoration(opacity: 0.1, borderRadius: 100),
+      child: IconButton(
+        icon: const Icon(Icons.person_outline, color: Colors.white),
+        onPressed: () => Navigator.pushNamed(context, '/profile'),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 16,
+          decoration: BoxDecoration(
+            color: BondlyTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.2,
+            color: Colors.white70,
+          ),
+        ),
+      ],
     );
   }
 
@@ -124,28 +136,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       return date.day == DateTime.now().day && date.month == DateTime.now().month;
     });
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BondlyTheme.glassDecoration(opacity: 0.08),
+    return BondlyCard(
+      padding: 16,
       child: Row(
         children: [
-          _StatusIndicator(
-            label: 'Questão',
-            isDone: questionDone,
-            icon: Icons.auto_awesome,
-          ),
-          Container(width: 1, height: 40, color: Colors.white10),
-          _StatusIndicator(
-            label: 'Check-in',
-            isDone: checkinDone,
-            icon: Icons.heart_broken, // mood heart
-          ),
-          Container(width: 1, height: 40, color: Colors.white10),
-          _StatusIndicator(
-            label: 'Parceiro',
-            isDone: cState.partnerCheckedInToday,
-            icon: Icons.people,
-          ),
+          _StatusItem(label: 'Questão', isDone: questionDone, icon: Icons.auto_awesome_outlined),
+          _VerticalDivider(),
+          _StatusItem(label: 'Mood', isDone: checkinDone, icon: Icons.favorite_border),
+          _VerticalDivider(),
+          _StatusItem(label: 'Parceiro', isDone: cState.partnerCheckedInToday, icon: Icons.people_outline),
         ],
       ),
     );
@@ -158,66 +157,39 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       crossAxisCount: 2,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
-      childAspectRatio: 1.1,
+      childAspectRatio: 1.15,
       children: [
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Chat',
           icon: Icons.chat_bubble_outline_rounded,
           color: const Color(0xFF6366F1),
           route: '/chat',
         ),
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Ensaio',
           icon: Icons.psychology_outlined,
           color: const Color(0xFF2DD4BF),
           route: '/simulation',
         ),
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Perguntas',
           icon: Icons.question_answer_outlined,
           color: const Color(0xFFFB923C),
           route: '/questions',
         ),
-        _buildActionCard(
-          context,
-          title: 'Check-in',
-          icon: Icons.mood_outlined,
-          color: const Color(0xFFF472B6),
-          route: '/checkin',
-        ),
-        _buildActionCard(
-          context,
-          title: 'Check-in',
-          icon: Icons.mood_outlined,
-          color: const Color(0xFFF472B6),
-          route: '/checkin',
-        ),
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Mural',
           icon: Icons.photo_library_outlined,
-          color: const Color(0xFF6366F1),
+          color: const Color(0xFFA855F7),
           route: '/memory-wall',
         ),
-        _buildActionCard(
-          context,
-          title: 'Wishlist',
-          icon: Icons.card_giftcard,
-          color: const Color(0xFFEAB308),
-          route: '/wishlist',
-        ),
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Acordos',
           icon: Icons.handshake_outlined,
           color: const Color(0xFF14B8A6),
           route: '/agreements',
         ),
-        _buildActionCard(
-          context,
+        _ActionCard(
           title: 'Gratidão',
           icon: Icons.mic_none_rounded,
           color: const Color(0xFFF472B6),
@@ -225,108 +197,201 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
       ],
     );
-
   }
 
-  Widget _buildActionCard(BuildContext context, {required String title, required IconData icon, required Color color, required String route}) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, route),
-      child: Container(
-        decoration: BondlyTheme.glassDecoration(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 12),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChallengeSection(ChallengesState state) {
-    if (state.isLoading) return const Center(child: CircularProgressIndicator());
-    if (state.challenges.isEmpty) return const Text('Nenhum desafio ativo.');
+  Widget _buildChallengeSection() {
+    final state = ref.watch(challengesProvider);
+    if (state.isLoading) return const BondlyCard(child: Center(child: CircularProgressIndicator()));
+    if (state.challenges.isEmpty) return const SizedBox.shrink();
 
     final challenge = state.challenges.first;
-    return GestureDetector(
+    return BondlyCard(
       onTap: () => Navigator.pushNamed(context, '/challenges'),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BondlyTheme.glassDecoration(opacity: 0.1),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.emoji_events_outlined, color: Colors.amber),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFACC15).withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(challenge['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(challenge['description'], style: const TextStyle(color: Colors.white38, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
+            child: const Icon(Icons.stars_rounded, color: Color(0xFFFACC15), size: 28),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(challenge['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text(
+                  challenge['description'], 
+                  style: const TextStyle(color: Colors.white38, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            const Icon(Icons.chevron_right, color: Colors.white24),
-          ],
-        ),
+          ),
+          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white24, size: 16),
+        ],
       ),
     );
   }
 
-  Widget _buildAICoachTeaser(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/ai-coach'),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
+  Widget _buildPremiumExperience(BuildContext context) {
+    return Column(
+      children: [
+        _PremiumTeaserCard(
+          title: 'Bondly AI Coach',
+          subtitle: 'Conselhos personalizados para o vosso momento.',
+          icon: Icons.auto_fix_high_rounded,
+          gradient: const [Color(0xFF4F46E5), Color(0xFF7C3AED)],
+          onTap: () => Navigator.pushNamed(context, '/ai-coach'),
         ),
-        child: const Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Precisa de um conselho?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
-                  SizedBox(height: 8),
-                  Text('Bondly AI Coach está pronto para te ajudar com sabedoria e empatia.', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                ],
-              ),
-            ),
-            SizedBox(width: 16),
-            Icon(Icons.auto_fix_high, color: Colors.white, size: 32),
-          ],
+        const SizedBox(height: 16),
+        _PremiumTeaserCard(
+          title: 'Date Planner',
+          subtitle: 'Deixem a IA planear o vosso próximo encontro.',
+          icon: Icons.celebration_rounded,
+          gradient: const [Color(0xFF0F172A), Color(0xFF1E293B)],
+          onTap: () => Navigator.pushNamed(context, '/dates'),
         ),
-      ),
+      ],
     );
   }
 }
 
-class _StatusIndicator extends StatelessWidget {
+class _StatusItem extends StatelessWidget {
   final String label;
   final bool isDone;
   final IconData icon;
 
-  const _StatusIndicator({required this.label, required this.isDone, required this.icon});
+  const _StatusItem({required this.label, required this.isDone, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
-          Icon(isDone ? Icons.check_circle : icon, color: isDone ? const Color(0xFF2DD4BF) : Colors.white24, size: 24),
-          const SizedBox(height: 8),
-          Text(label, style: TextStyle(color: isDone ? Colors.white : Colors.white38, fontSize: 11)),
+          Icon(
+            isDone ? Icons.check_circle_rounded : icon, 
+            color: isDone ? BondlyTheme.secondary : Colors.white24, 
+            size: 26,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label, 
+            style: TextStyle(
+              color: isDone ? Colors.white : Colors.white38, 
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+class _VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 32, color: Colors.white.withOpacity(0.05));
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final String route;
+
+  const _ActionCard({required this.title, required this.icon, required this.color, required this.route});
+
+  @override
+  Widget build(BuildContext context) {
+    return BondlyCard(
+      padding: 0,
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title, 
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 0.5),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumTeaserCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final List<Color> gradient;
+  final VoidCallback onTap;
+
+  const _PremiumTeaserCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          gradient: LinearGradient(colors: gradient),
+          boxShadow: [
+            BoxShadow(
+              color: gradient.first.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title, 
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle, 
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Icon(icon, color: Colors.white, size: 32),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

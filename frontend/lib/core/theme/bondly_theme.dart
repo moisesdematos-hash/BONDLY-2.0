@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BondlyTheme {
-  // Colors
-  static const Color primary = Color(0xFF6366F1);
-  static const Color secondary = Color(0xFF2DD4BF);
-  static const Color background = Color(0xFF0F172A);
-  static const Color surface = Color(0xFF1E293B);
-  static const Color accent = Color(0xFF8B5CF6);
+  // Colors - Premium Palette
+  static const Color primary = Color(0xFF818CF8); // Indigo soft
+  static const Color secondary = Color(0xFF2DD4BF); // Teal
+  static const Color background = Color(0xFF020617); // Slate 950 (deeper)
+  static const Color surface = Color(0xFF1E293B); // Slate 800
+  static const Color accent = Color(0xFFF472B6); // Pink
+  static const Color error = Color(0xFFFB7185); // Rose
   
   // Gradients
   static const LinearGradient mainGradient = LinearGradient(
-    colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    colors: [Color(0xFF020617), Color(0xFF0F172A)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 
-  static const LinearGradient premiumGradient = LinearGradient(
-    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+  static const LinearGradient glassGradient = LinearGradient(
+    colors: [Colors.white10, Colors.white05],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -30,55 +32,53 @@ class BondlyTheme {
         primary: primary,
         secondary: secondary,
         surface: surface,
+        error: error,
+      ),
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
+        displayLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -1),
+        headlineMedium: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+        bodyLarge: const TextStyle(fontSize: 16, color: Colors.white70, height: 1.5),
+        bodyMedium: const TextStyle(fontSize: 14, color: Colors.white60),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          elevation: 0,
-        ),
+        centerTitle: true,
+        titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       cardTheme: CardTheme(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withOpacity(0.04),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+          borderRadius: BorderRadius.circular(28),
+          side: BorderSide(color: Colors.white.withOpacity(0.08)),
         ),
         elevation: 0,
-        margin: EdgeInsets.zero,
-      ),
-      textTheme: const TextTheme(
-        headlineMedium: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Colors.white70,
-        ),
       ),
     );
   }
 
-  // Helper for Glassmorphism Containers
-  static BoxDecoration glassDecoration({double opacity = 0.05, double blur = 10}) {
+  // Deluxe Glassmorphism
+  static BoxDecoration glassDecoration({
+    double opacity = 0.05, 
+    double blur = 12,
+    double borderRadius = 28,
+    bool showBorder = true,
+  }) {
     return BoxDecoration(
       color: Colors.white.withOpacity(opacity),
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: Colors.white.withOpacity(0.1)),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: showBorder ? Border.all(color: Colors.white.withOpacity(0.12), width: 1) : null,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
+        )
+      ],
     );
   }
+
+  // Animation Constants
+  static const Duration quickAction = Duration(milliseconds: 200);
+  static const Duration pageTransition = Duration(milliseconds: 400);
 }

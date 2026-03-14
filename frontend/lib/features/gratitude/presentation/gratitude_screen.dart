@@ -90,25 +90,17 @@ class _GratitudeScreenState extends ConsumerState<GratitudeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Diário de Gratidão', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: const Text('Diário de Gratidão ✨'),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: BondlyTheme.mainGradient),
         child: SafeArea(
           child: Column(
             children: [
               _buildSummaryHeader(state.entries),
               Expanded(
                 child: state.isLoading && state.entries.isEmpty
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFFF472B6)))
+                    ? const BondlyLoadingWidget(message: 'A sintonizar gratidão...')
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                         itemCount: state.entries.length,
@@ -116,8 +108,14 @@ class _GratitudeScreenState extends ConsumerState<GratitudeScreen> {
                           final entry = state.entries[index];
                           return _GratitudeEntryCard(
                             entry: entry,
-                            onPlay: () => _playAudio(entry['audio_url']),
-                            onDelete: () => ref.read(gratitudeProvider.notifier).deleteEntry(entry['id'], relId!),
+                            onPlay: () {
+                              HapticFeedback.lightImpact();
+                              _playAudio(entry['audio_url']);
+                            },
+                            onDelete: () {
+                              HapticFeedback.warningAlaram();
+                              ref.read(gratitudeProvider.notifier).deleteEntry(entry['id'], relId!);
+                            },
                           );
                         },
                       ),
@@ -133,23 +131,29 @@ class _GratitudeScreenState extends ConsumerState<GratitudeScreen> {
   Widget _buildSummaryHeader(List<dynamic> entries) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BondlyTheme.glassDecoration(opacity: 0.1),
+      child: BondlyCard(
+        padding: 20,
         child: Row(
           children: [
-            const Icon(Icons.favorite, color: Color(0xFFF472B6), size: 40),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: BondlyTheme.accent.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.favorite_rounded, color: BondlyTheme.accent, size: 28),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${entries.length} Momentos de Gratidão',
+                    '${entries.length} Momentos Guardados',
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Text(
-                    'Ouvir a gratidão fortalece o vínculo.',
+                    'Reouvir cria memórias eternas.',
                     style: TextStyle(color: Colors.white60, fontSize: 13),
                   ),
                 ],
@@ -165,42 +169,49 @@ class _GratitudeScreenState extends ConsumerState<GratitudeScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.black.withOpacity(0.2),
         border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
       ),
       child: Column(
         children: [
           GestureDetector(
-            onLongPressStart: (_) => _startRecording(),
-            onLongPressEnd: (_) => _stopRecording(),
+            onLongPressStart: (_) {
+              HapticFeedback.mediumImpact();
+              _startRecording();
+            },
+            onLongPressEnd: (_) {
+              HapticFeedback.heavyImpact();
+              _stopRecording();
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: EdgeInsets.all(_isRecording ? 30 : 20),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _isRecording ? Colors.redAccent.withOpacity(0.8) : const Color(0xFFF472B6),
+                color: _isRecording ? BondlyTheme.error : BondlyTheme.primary,
                 boxShadow: [
                   BoxShadow(
-                    color: (_isRecording ? Colors.redAccent : const Color(0xFFF472B6)).withOpacity(0.4),
-                    blurRadius: 20,
-                    spreadRadius: _isRecording ? 10 : 2,
+                    color: (_isRecording ? BondlyTheme.error : BondlyTheme.primary).withOpacity(0.3),
+                    blurRadius: _isRecording ? 30 : 15,
+                    spreadRadius: _isRecording ? 8 : 2,
                   )
                 ],
               ),
               child: Icon(
-                _isRecording ? Icons.mic : Icons.mic_none,
+                _isRecording ? Icons.mic_rounded : Icons.mic_none_rounded,
                 color: Colors.white,
-                size: 40,
+                size: 44,
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
-            _isRecording ? 'Gravando gratidão...' : 'Segure para gravar um agradecimento',
+            _isRecording ? 'A ouvir o teu coração...' : 'Segura para gravar um agradecimento',
             style: TextStyle(
-              color: _isRecording ? Colors.redAccent : Colors.white60,
+              color: _isRecording ? BondlyTheme.error : Colors.white60,
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
             ),
           ),
         ],
@@ -225,71 +236,80 @@ class _GratitudeEntryCard extends StatelessWidget {
     final score = (entry['sentiment_score'] ?? 0.5) as num;
     final isHappy = score > 0.6;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BondlyTheme.glassDecoration(),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -10,
-              top: -10,
-              child: Icon(
-                isHappy ? Icons.favorite : Icons.sentiment_satisfied,
-                size: 80,
-                color: (isHappy ? Colors.pink : Colors.teal).withOpacity(0.05),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: BondlyCard(
+        padding: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -10,
+                top: -10,
+                child: Icon(
+                  isHappy ? Icons.favorite_rounded : Icons.mood_rounded,
+                  size: 90,
+                  color: (isHappy ? BondlyTheme.accent : BondlyTheme.secondary).withOpacity(0.03),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 14,
-                        backgroundImage: entry['user']['avatar_url'] != null
-                            ? NetworkImage(entry['user']['avatar_url'])
-                            : null,
-                        child: entry['user']['avatar_url'] == null ? const Icon(Icons.person, size: 16) : null,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        entry['user']['name'] ?? 'Parceiro',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.play_circle_fill, color: Color(0xFFF472B6), size: 32),
-                        onPressed: onPlay,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    entry['transcription'] ?? 'Processando transcrição...',
-                    style: const TextStyle(color: Colors.white90, height: 1.4),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _formatDate(entry['created_at']),
-                        style: const TextStyle(color: Colors.white24, fontSize: 11),
-                      ),
-                      GestureDetector(
-                        onTap: onDelete,
-                        child: const Icon(Icons.delete_outline, color: Colors.white24, size: 18),
-                      ),
-                    ],
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: entry['user']['avatar_url'] != null
+                              ? NetworkImage(entry['user']['avatar_url'])
+                              : null,
+                          child: entry['user']['avatar_url'] == null ? const Icon(Icons.person, size: 18) : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          entry['user']['name'] ?? 'Parceiro',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.play_circle_filled_rounded, color: BondlyTheme.primary, size: 36),
+                          onPressed: onPlay,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      entry['transcription'] ?? 'O mestre Whisper está a transcrever...',
+                      style: const TextStyle(color: Colors.white, height: 1.5, fontSize: 15),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _formatDate(entry['created_at']),
+                          style: const TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.w500),
+                        ),
+                        GestureDetector(
+                          onTap: onDelete,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.delete_outline_rounded, color: Colors.white24, size: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
