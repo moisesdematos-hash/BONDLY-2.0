@@ -98,6 +98,7 @@ export class RelationshipsService {
           id,
           name,
           type,
+          invite_code,
           created_at
         )
       `)

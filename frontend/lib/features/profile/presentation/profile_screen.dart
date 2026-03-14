@@ -1,8 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/domain/auth_provider.dart';
 import '../../relationship/domain/relationship_provider.dart';
 import '../data/profile_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/theme/bondly_theme.dart';
+import '../../../core/widgets/bondly_widgets.dart';
 
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -46,29 +49,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 children: [
                   _buildProfileHeader(user),
                   const SizedBox(height: 32),
+                  _buildRelationshipCodeCard(relationshipState),
+                  const SizedBox(height: 32),
                   _buildSectionTitle('Informações Pessoais'),
                   const SizedBox(height: 16),
-                  _buildInfoCard(
-                    items: [
-                      _ProfileInfoItem(
-                        icon: Icons.person_outline,
-                        label: 'Nome',
-                        value: user?['name'] ?? 'Não informado',
-                        canEdit: true,
-                        onEdit: () => _showEditNameDialog(user?['name'] ?? ''),
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.email_outlined,
-                        label: 'E-mail',
-                        value: user?['email'] ?? '',
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.workspace_premium_outlined,
-                        label: 'Plano',
-                        value: (user?['role'] ?? 'Standard').toString().toUpperCase(),
-                        valueColor: user?['role'] == 'premium' ? Colors.amber : Colors.white70,
-                      ),
-                    ],
+                  BondlyCard(
+                    padding: 0,
+                    child: Column(
+                      children: [
+                        _ProfileInfoItem(
+                          icon: Icons.person_outline,
+                          label: 'Nome',
+                          value: user?['name'] ?? 'Não informado',
+                          canEdit: true,
+                          onEdit: () => _showEditNameDialog(user?['name'] ?? ''),
+                        ),
+                        _divider(),
+                        _ProfileInfoItem(
+                          icon: Icons.email_outlined,
+                          label: 'E-mail',
+                          value: user?['email'] ?? '',
+                        ),
+                        _divider(),
+                        _ProfileInfoItem(
+                          icon: Icons.workspace_premium_outlined,
+                          label: 'Plano',
+                          value: (user?['role'] ?? 'Standard').toString().toUpperCase(),
+                          valueColor: user?['role'] == 'premium' ? Colors.amber : Colors.white70,
+                        ),
+                      ],
+                    ),
                   ),
                   if (user?['role'] != 'premium') ...[
                     const SizedBox(height: 24),
@@ -77,50 +87,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(height: 32),
                   _buildSectionTitle('Configurações'),
                   const SizedBox(height: 16),
-                  _buildInfoCard(
-                    items: [
-                      _ProfileInfoItem(
-                        icon: Icons.language,
-                        label: 'Idioma',
-                        value: user?['language']?.toUpperCase() ?? 'PT',
-                        canEdit: true,
-                        onEdit: () => _showLanguageDialog(user?['language'] ?? 'pt'),
-                        trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.notifications_none_outlined,
-                        label: 'Notificações',
-                        value: 'Ativadas',
-                        trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.security_outlined,
-                        label: 'Privacidade',
-                        value: 'Configurar',
-                        trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
-                      ),
-                    ],
+                  BondlyCard(
+                    padding: 0,
+                    child: Column(
+                      children: [
+                        _ProfileInfoItem(
+                          icon: Icons.language,
+                          label: 'Idioma',
+                          value: user?['language']?.toUpperCase() ?? 'PT',
+                          canEdit: true,
+                          onEdit: () => _showLanguageDialog(user?['language'] ?? 'pt'),
+                          trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
+                        ),
+                        _divider(),
+                        _ProfileInfoItem(
+                          icon: Icons.notifications_none_outlined,
+                          label: 'Notificações',
+                          value: 'Ativadas',
+                          trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 32),
                   _buildSectionTitle('Suporte e Ajuda'),
                   const SizedBox(height: 16),
-                  _buildInfoCard(
-                    items: [
-                      _ProfileInfoItem(
-                        icon: Icons.chat_outlined,
-                        label: 'WhatsApp',
-                        value: 'Falar com Moisés',
-                        trailing: const Icon(Icons.open_in_new, size: 18, color: Colors.greenAccent),
-                        onEdit: () => _launchURL('https://wa.me/244923394229'), // Assuming Angolan prefix +244 based on number format
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.support_agent_outlined,
-                        label: 'E-mail',
-                        value: 'moisesdematos@hotmail.com',
-                        trailing: const Icon(Icons.open_in_new, size: 18, color: Color(0xFF6366F1)),
-                        onEdit: () => _launchURL('mailto:moisesdematos@hotmail.com?subject=Suporte Bondly'),
-                      ),
-                    ],
+                  BondlyCard(
+                    padding: 0,
+                    child: Column(
+                      children: [
+                        _ProfileInfoItem(
+                          icon: Icons.chat_outlined,
+                          label: 'WhatsApp',
+                          value: 'Falar com Moisés',
+                          trailing: const Icon(Icons.open_in_new, size: 18, color: Colors.greenAccent),
+                          onEdit: () => _launchURL('https://wa.me/244923394229'),
+                        ),
+                        _divider(),
+                        _ProfileInfoItem(
+                          icon: Icons.support_agent_outlined,
+                          label: 'E-mail',
+                          value: 'moisesdematos@hotmail.com',
+                          trailing: const Icon(Icons.open_in_new, size: 18, color: Color(0xFF6366F1)),
+                          onEdit: () => _launchURL('mailto:moisesdematos@hotmail.com?subject=Suporte Bondly'),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 32),
                   _buildSectionTitle('Zona de Perigo'),
@@ -137,6 +149,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
   }
+
+  Widget _buildRelationshipCodeCard(RelationshipState state) {
+    final code = state.selectedRelationship?['invite_code'];
+    if (code == null) return const SizedBox.shrink();
+
+    return BondlyCard(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: BondlyTheme.primary.withOpacity(0.1), shape: BoxShape.circle),
+                child: const Icon(Icons.vpn_key_outlined, color: BondlyTheme.primary, size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Text('Código da Relação', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Spacer(),
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: code));
+                  HapticFeedback.mediumImpact();
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Código copiado! 📋')));
+                },
+                child: const Text('COPIAR'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Text(
+              code,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4, color: BondlyTheme.primary),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text('Envia este código ao teu parceiro para ele se juntar a ti.', style: TextStyle(color: Colors.white38, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() => Divider(height: 1, color: Colors.white.withOpacity(0.05), indent: 70);
 
   Widget _buildSliverAppBar(Map<String, dynamic>? user) {
     return SliverAppBar(
