@@ -34,5 +34,10 @@ export class CheckinsController {
   async getPersonalHistory(@GetUser('userId') userId: string) {
     return this.checkinsService.findPersonalHistory(userId);
   }
+
+  @Get('insights/:id')
+  async generateMonthlyInsights(@Param('id') relationshipId: string) {
+    return this.checkinsService.generateInsights(relationshipId);
+  }
 }
 

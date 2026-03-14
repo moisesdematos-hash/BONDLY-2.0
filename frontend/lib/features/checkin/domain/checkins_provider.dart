@@ -72,6 +72,18 @@ class CheckinsNotifier extends StateNotifier<CheckinsState> {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
+
+  Future<Map<String, dynamic>> fetchInsights(String relationshipId) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final insights = await _checkinsService.getInsightsFromAI(relationshipId);
+      state = state.copyWith(isLoading: false);
+      return insights;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
+  }
 }
 
 final checkinsProvider = StateNotifierProvider<CheckinsNotifier, CheckinsState>((ref) {

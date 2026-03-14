@@ -44,6 +44,15 @@ class CheckinsService {
       throw Exception('Falha ao buscar status do parceiro');
     }
   }
+
+  Future<Map<String, dynamic>> getInsightsFromAI(String relationshipId) async {
+    final response = await _apiClient.get('/checkins/insights/$relationshipId');
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Erro ao processar insights');
+    }
+  }
 }
 
 final checkinsServiceProvider = Provider<CheckinsService>((ref) {

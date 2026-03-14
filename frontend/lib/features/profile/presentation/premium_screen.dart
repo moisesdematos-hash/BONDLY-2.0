@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/network/api_client.dart';
+import '../../relationship/domain/relationship_provider.dart';
+import '../../checkin/domain/checkins_provider.dart';
 
 class PremiumScreen extends ConsumerStatefulWidget {
   const PremiumScreen({super.key});
@@ -111,8 +113,93 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white38, fontSize: 12),
             ),
+            const SizedBox(height: 64),
+            _buildInsightsSection(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildInsightsSection(BuildContext context) {
+    // Verificação provisória para simular que um premium user tem acesso ao insight
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Relatório de Relacionamento (AI)',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.amber),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'A IA analisa os últimos 30 dias de Check-ins para encontrar padrões.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        const SizedBox(height: 24),
+        OutlinedButton.icon(
+          onPressed: () => _generateInsights(context),
+          icon: const Icon(Icons.auto_awesome, color: Colors.amber),
+          label: const Text('Gerar Insights Mensais', style: TextStyle(color: Colors.amber)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            side: const BorderSide(color: Colors.amber),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _generateInsights(BuildContext context) async {
+    
+    final relationshipId = ref.read(relationshipProvider).selectedRelationship?['id'];
+    if (relationshipId == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final result = await ref.read(checkinsProvider.notifier).fetchInsights(relationshipId);
+      if (mounted) {
+        Navigator.pop(context); // close loader
+        _showInsightsDialog(context, result['insightsReport'] ?? result['message']);
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao gerar insights: $e')),
+        );
+      }
+    }
+  }
+
+  void _showInsightsDialog(BuildContext context, String insightsText) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Row(
+          children: [
+            Icon(Icons.psychology, color: Colors.amber),
+            SizedBox(width: 8),
+            Text('Relatório do AI Coach', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            insightsText,
+            style: const TextStyle(color: Colors.white70, height: 1.5),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar', style: TextStyle(color: Colors.amber)),
+          ),
+        ],
       ),
     );
   }

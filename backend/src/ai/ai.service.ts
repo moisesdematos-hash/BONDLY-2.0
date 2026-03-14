@@ -283,6 +283,24 @@ export class AiService implements OnModuleInit {
     if (!content) throw new Error('Falha ao gerar nudge');
     return JSON.parse(content);
   }
+
+  async getAdvice(promptText: string): Promise<string> {
+    if (!this.openai) {
+      return "[MODO SIMULADO] Com base nos vossos Check-ins deste mês, noto que as terças-feiras costumam trazer alguma tensão à relação. No entanto, aos fins-de-semana, ambos partilham níveis de felicidade muito altos! Sugestão 1: Tentem fazer The Daily Question juntos à terça-feira para descomprimir. Sugestão 2: Enviem um elogio sincero um ao outro amanhã de manhã.";
+    }
+
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: promptText }],
+      });
+
+      return response.choices[0]?.message?.content || "Não consegui gerar o conselho neste momento.";
+    } catch (error) {
+      console.error('Erro no AI Service getAdvice:', error);
+      throw new Error('Falha na comunicação com a API de IA.');
+    }
+  }
 }
 
 
