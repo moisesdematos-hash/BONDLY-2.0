@@ -97,8 +97,78 @@ class _BondlyChatScreenState extends ConsumerState<BondlyChatScreen> {
         ],
       ),
       actions: [
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.ac_unit, color: Colors.cyanAccent),
+          tooltip: 'Icebreaker (SOS)',
+          onPressed: () {
+            final relId = state.selectedRelationship?['id'];
+            if (relId != null) {
+              _triggerIcebreaker(context, relId);
+            }
+          },
+        ),
         IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
       ],
+    );
+  }
+
+  Future<void> _triggerIcebreaker(BuildContext context, String relationshipId) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: Colors.cyan)),
+    );
+
+    try {
+      // 1. Chamar Endpoint do NestJS
+      import '../../../core/network/api_client.dart';
+      final response = await ApiClient.post('/relationships/$relationshipId/icebreaker', {});
+      
+      if (mounted) {
+        Navigator.pop(context); // Fechar loading
+        
+        final msg = response['message'] as String?;
+        if (msg != null && msg.isNotEmpty) {
+          // Mostrar num belo Dialog de "desafio para quebrar o gelo"
+          _showIcebreakerDialog(context, msg);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao ativar Icebreaker: $e')),
+        );
+      }
+    }
+  }
+
+  void _showIcebreakerDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.cyanAccent)),
+        title: const Row(
+          children: [
+            Icon(Icons.ac_unit, color: Colors.cyanAccent),
+            SizedBox(width: 8),
+            Text('O Gelo Quebrou!', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white70, height: 1.5, fontSize: 16),
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Entendido! 😄', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
     );
   }
 

@@ -37,5 +37,13 @@ export class RelationshipsController {
   ) {
     return this.relationshipsService.remove(id, userId);
   }
+
+  @Post(':id/icebreaker')
+  async triggerIcebreaker(
+    @Param('id') relationshipId: string,
+    @GetUser('userId') userId: string,
+  ) {
+    return this.relationshipsService.triggerIcebreaker(relationshipId, userId);
+  }
 }
 
