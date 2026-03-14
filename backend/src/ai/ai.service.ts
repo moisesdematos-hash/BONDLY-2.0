@@ -18,14 +18,20 @@ export class AiService implements OnModuleInit {
   }
 
   async analyzeSentiment(text: string) {
-    if (!this.openai) return { sentiment_score: 0.5 };
+    if (!this.openai) {
+      const score = Math.random();
+      return {
+        score: parseFloat(score.toFixed(2)),
+        label: score > 0.6 ? 'positivo' : score < 0.4 ? 'negativo' : 'neutro'
+      };
+    }
 
     const prompt = `Analise o sentimento da seguinte mensagem em um contexto de relacionamento. 
     Retorne apenas um JSON no formato: {"score": 0.0 a 1.0, "label": "positivo/neutro/negativo"}.
     Mensagem: "${text}"`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
       response_format: { type: 'json_object' },
     });
@@ -35,14 +41,20 @@ export class AiService implements OnModuleInit {
     return JSON.parse(content);
   }
 
-
   async getCoachSuggestion(context: {
     message: string;
     relationshipType: string;
     isPremium: boolean;
     language: string;
   }) {
-    if (!this.openai) return { suggestion: 'AI Coach is busy, please try again later.' };
+    if (!this.openai) {
+      return {
+        sugestao: `[MODO SIMULADO] Com base na sua mensagem "${context.message}", vejo que você está buscando melhorar a conexão no seu relacionamento de ${context.relationshipType}. Uma sugestão prática seria praticar a escuta ativa: tente repetir o que seu parceiro disse com suas próprias palavras antes de responder. Isso valida os sentimentos dele(a) e evita mal-entendidos. Como você se sente tentando essa abordagem?`,
+        emocao_detectada: "Busca por Conexão",
+        alerta_conflito: false,
+        dica_rapida: "Tente usar frases começando com 'Eu sinto...' em vez de 'Você sempre...'"
+      };
+    }
 
     const prompt = `Você é o Bondly AI Coach, um especialista em relacionamentos focado em comunicação não-violenta e inteligência emocional.
     
@@ -68,7 +80,7 @@ export class AiService implements OnModuleInit {
     }`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: [
         { 
           role: 'system', 
@@ -93,7 +105,15 @@ export class AiService implements OnModuleInit {
     isPremium: boolean;
     language: string;
   }) {
-    if (!this.openai) return { reaction: 'AI is unavailable', feedback: 'Please try again later.' };
+    if (!this.openai) {
+      return {
+        reacao_parceiro: "[MODO SIMULADO] 'Eu entendo o que você está dizendo, mas às vezes sinto que minhas necessidades também não estão sendo ouvidas.'",
+        analise_impacto: "A sua mensagem foi clara, mas pode ter soado um pouco defensiva, levando o parceiro a também se defender.",
+        sugestao_coach: "Tente suavizar o início da conversa expressando sua vulnerabilidade primeiro.",
+        tom_detectado: "Sério/Reflexivo",
+        conselho_rapido: "Respire fundo antes de iniciar conversas importantes."
+      };
+    }
 
     const prompt = `Você é o Bondly Simulator. Seu objetivo é ajudar o usuário a ensaiar conversas difíceis.
     
@@ -116,7 +136,7 @@ export class AiService implements OnModuleInit {
     }`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: [
         { 
           role: 'system', 
@@ -138,7 +158,26 @@ export class AiService implements OnModuleInit {
     language: string;
     isPremium: boolean;
   }) {
-    if (!this.openai) return { suggestions: [] };
+    if (!this.openai) {
+      return {
+        sugestoes: [
+          {
+            titulo: "[MODO SIMULADO] Jantar Temático em Casa",
+            descricao: "Escolham um país que vocês gostariam de visitar e preparem um prato típico juntos.",
+            por_que: "Cozinhar juntos estimula o trabalho em equipe e a criatividade.",
+            tipo: "casa",
+            premium: false
+          },
+          {
+            titulo: "[MODO SIMULADO] Piquenique ao Pôr do Sol",
+            descricao: "Preparem uma cesta com frutas e lanches e assistam ao pôr do sol em um parque local.",
+            por_que: "O contato com a natureza ajuda a reduzir o estresse e focar um no outro.",
+            tipo: "rua",
+            premium: false
+          }
+        ]
+      };
+    }
 
     const moodContext = context.recentMoods?.length 
       ? `O clima recente do casal tem sido: ${context.recentMoods.join(', ')}.`
@@ -171,7 +210,7 @@ export class AiService implements OnModuleInit {
     }`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: [
         { 
           role: 'system', 
@@ -193,7 +232,12 @@ export class AiService implements OnModuleInit {
     relationshipType: string;
     language: string;
   }) {
-    if (!this.openai) return { nudge: null };
+    if (!this.openai) {
+      return {
+        mensagem: "[MODO SIMULADO] Que tal enviar uma mensagem de 'estou pensando em você' para seu parceiro agora?",
+        prioridade: "media"
+      };
+    }
 
     const moodContext = context.partnerMood 
       ? `O parceiro se sente: ${context.partnerMood}.`
@@ -224,7 +268,7 @@ export class AiService implements OnModuleInit {
     }`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: [
         { 
           role: 'system', 

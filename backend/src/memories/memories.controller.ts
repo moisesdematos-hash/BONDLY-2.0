@@ -15,11 +15,12 @@ export class MemoriesController {
   }
 
   @Post()
-  async create(@Request() req: ExpressRequest & { user: any }, @Body() body: { relationship_id: string; image_url: string; caption?: string }) {
+  async create(@Request() req: ExpressRequest & { user: any }, @Body() body: { relationship_id: string; media_url: string; media_type: string; caption?: string }) {
     return this.memoriesService.create(
       body.relationship_id,
       req.user.userId,
-      body.image_url,
+      body.media_url,
+      body.media_type,
       body.caption,
     );
   }

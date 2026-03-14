@@ -134,9 +134,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 name: _nameController.text,
                                 email: _emailController.text,
                                 password: _passwordController.text,
-                              ).then((_) {
+                              ).then((_) async {
                                 if (mounted && ref.read(authProvider).token != null) {
-                                  Navigator.pushReplacementNamed(context, '/setup');
+                                  // For a new user, they won't have relationships yet, but using the same logic for consistency
+                                  await ref.read(relationshipProvider.notifier).fetchRelationships();
+                                  if (mounted) {
+                                    final relState = ref.read(relationshipProvider);
+                                    if (relState.relationships.isNotEmpty) {
+                                      Navigator.pushReplacementNamed(context, '/dashboard');
+                                    } else {
+                                      Navigator.pushReplacementNamed(context, '/relationship-setup');
+                                    }
+                                  }
                                 }
                               });
                         }

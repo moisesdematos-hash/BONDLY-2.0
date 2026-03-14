@@ -15,7 +15,7 @@ export class ChallengesService {
     const supabase = this.supabaseService.getClient();
     
     // Get all challenges
-    let challengesQuery = supabase.from('challenges').select('*');
+    let challengesQuery = supabase.from('challenges').select('*').order('id', { ascending: true });
     if (!isPremium) {
       challengesQuery = challengesQuery.eq('premium_only', false);
     }

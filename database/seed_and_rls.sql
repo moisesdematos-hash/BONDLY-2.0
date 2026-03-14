@@ -91,7 +91,8 @@ CREATE TABLE IF NOT EXISTS memories (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   relationship_id UUID NOT NULL REFERENCES relationships(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  image_url TEXT NOT NULL,
+  media_url TEXT NOT NULL,
+  media_type VARCHAR(50) DEFAULT 'image',
   caption TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

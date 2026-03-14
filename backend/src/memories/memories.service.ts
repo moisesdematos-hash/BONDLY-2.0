@@ -17,7 +17,7 @@ export class MemoriesService {
     return data;
   }
 
-  async create(relationshipId: string, userId: string, imageUrl: string, caption?: string) {
+  async create(relationshipId: string, userId: string, mediaUrl: string, mediaType: string, caption?: string) {
     const supabase = this.supabaseService.getClient();
     const { data, error } = await supabase
       .from('memories')
@@ -25,7 +25,8 @@ export class MemoriesService {
         {
           relationship_id: relationshipId,
           user_id: userId,
-          image_url: imageUrl,
+          media_url: mediaUrl,
+          media_type: mediaType,
           caption: caption,
         },
       ])

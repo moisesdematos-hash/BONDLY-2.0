@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Delete, Param } from '@nestjs/common';
 import { RelationshipsService } from './relationships.service';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,6 +28,14 @@ export class RelationshipsController {
     @GetUser('userId') userId: string,
   ) {
     return this.relationshipsService.joinRelationship(inviteCode, userId);
+  }
+
+  @Delete(':id')
+  async remove(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+  ) {
+    return this.relationshipsService.remove(id, userId);
   }
 }
 

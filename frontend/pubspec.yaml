@@ -18,7 +18,10 @@ dependencies:
   framer_motion: ^0.0.1+1 # Flutter equivalent or similar animation packages
   lucide_icons: ^0.224.0
   fl_chart: ^0.63.0
-
+  url_launcher: ^6.1.11
+  http: ^1.1.0
+  video_player: ^2.8.1
+  audioplayers: ^5.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -26,3 +29,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/

@@ -18,26 +18,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Icon(Icons.favorite, size: 100, color: Color(0xFF6366F1)),
-            const SizedBox(height: 32),
-            const Text(
-              'Bondly',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'AI Relationship Coach',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white60),
-            ),
-            const SizedBox(height: 48),
+      backgroundColor: const Color(0xFF0F172A), // Premium dark blue/black
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Image.asset(
+                  'assets/images/welcome_couples.png',
+                  height: 250,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 48),
+              const Text(
+                'Bondly',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 40, 
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Nutrindo conexões reais com IA',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white60,
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 48),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -64,9 +81,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ref.read(authProvider.notifier).login(
                             _emailController.text,
                             _passwordController.text,
-                          ).then((_) {
+                          ).then((_) async {
                             if (mounted && ref.read(authProvider).token != null) {
-                              Navigator.pushReplacementNamed(context, '/setup');
+                              // After login, fetch relationships to decide where to go
+                              await ref.read(relationshipProvider.notifier).fetchRelationships();
+                              if (mounted) {
+                                final relState = ref.read(relationshipProvider);
+                                if (relState.relationships.isNotEmpty) {
+                                  Navigator.pushReplacementNamed(context, '/dashboard');
+                                } else {
+                                  Navigator.pushReplacementNamed(context, '/relationship-setup');
+                                }
+                              }
                             }
                           });
                     },

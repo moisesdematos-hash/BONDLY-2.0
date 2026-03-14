@@ -86,6 +86,16 @@ class RelationshipNotifier extends StateNotifier<RelationshipState> {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
+
+  Future<void> deleteRelationship(String id) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await _service.deleteRelationship(id);
+      await fetchRelationships();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
 }
 
 final relationshipProvider = StateNotifierProvider<RelationshipNotifier, RelationshipState>((ref) {

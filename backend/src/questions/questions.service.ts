@@ -14,27 +14,34 @@ export class QuestionsService {
   async getDailyQuestion(userId: string, relationshipId: string, relationshipType: string, language: string) {
     const supabase = this.supabaseService.getClient();
 
-    // 1. Get current daily question
-    const { data: question, error: questionError } = await supabase
+    // 1. Get all questions for this type and language to rotate
+    const { data: questions, error: questionsError } = await supabase
       .from('daily_questions')
       .select('*')
       .eq('relationship_type', relationshipType)
       .eq('language', language)
-      .limit(1)
-      .single();
+      .order('created_at', { ascending: true });
 
-    if (questionError && questionError.code !== 'PGRST116') throw questionError;
+    if (questionsError) throw questionsError;
     
-    if (!question) {
-      return {
+    let question;
+    if (!questions || questions.length === 0) {
+      question = {
         id: 'fallback-01',
         question_text: language === 'pt' 
           ? 'Qual é a sua lembrança favorita de nós dois ultimamente?' 
           : 'What is your favorite recent memory of us?',
         relationship_type: relationshipType,
-        user_answered: false,
-        partner_answered: false,
       };
+    } else {
+      // Rotation logic: pick one based on the day of the year
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = (now.getTime() - start.getTime()) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      
+      question = questions[dayOfYear % questions.length];
     }
 
 

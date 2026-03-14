@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Body, UseGuards, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
@@ -25,5 +25,10 @@ export class UsersController {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, ...result } = user;
     return result;
+  }
+
+  @Delete('me')
+  async deleteMe(@GetUser('userId') userId: string) {
+    return this.usersService.remove(userId);
   }
 }

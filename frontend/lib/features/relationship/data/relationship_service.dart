@@ -40,6 +40,13 @@ class RelationshipService {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Falha ao entrar no relacionamento');
     }
   }
+
+  Future<void> deleteRelationship(String id) async {
+    final response = await apiClient.delete('/relationships/$id');
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Falha ao excluir relacionamento');
+    }
+  }
 }
 
 

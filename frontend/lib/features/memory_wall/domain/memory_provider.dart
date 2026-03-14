@@ -40,9 +40,9 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
     }
   }
 
-  Future<void> addMemory(String relationshipId, String imageUrl, String? caption) async {
+  Future<void> addMemory(String relationshipId, String mediaUrl, String mediaType, String? caption) async {
     try {
-      final newMemory = await _memoryService.createMemory(relationshipId, imageUrl, caption);
+      final newMemory = await _memoryService.createMemory(relationshipId, mediaUrl, mediaType, caption);
       state = state.copyWith(memories: [newMemory, ...state.memories]);
     } catch (e) {
       state = state.copyWith(error: e.toString());

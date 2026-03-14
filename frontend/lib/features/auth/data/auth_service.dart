@@ -38,5 +38,12 @@ class AuthService {
       throw Exception(jsonDecode(response.body)['message'] ?? 'Falha no registro');
     }
   }
+
+  Future<void> deleteAccount() async {
+    final response = await apiClient.delete('/users/me');
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Falha ao excluir conta');
+    }
+  }
 }
 

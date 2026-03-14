@@ -16,10 +16,11 @@ class MemoryService {
     }
   }
 
-  Future<Map<String, dynamic>> createMemory(String relationshipId, String imageUrl, String? caption) async {
+  Future<Map<String, dynamic>> createMemory(String relationshipId, String mediaUrl, String mediaType, String? caption) async {
     final response = await _apiClient.post('/memories', {
       'relationship_id': relationshipId,
-      'image_url': imageUrl,
+      'media_url': mediaUrl,
+      'media_type': mediaType,
       'caption': caption,
     });
     if (response.statusCode == 201) {

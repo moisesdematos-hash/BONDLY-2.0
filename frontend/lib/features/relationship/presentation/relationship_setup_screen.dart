@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/relationship_provider.dart';
 
@@ -125,6 +126,18 @@ class _RelationshipSetupScreenState extends ConsumerState<RelationshipSetupScree
                   style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 4),
                   textAlign: TextAlign.center,
                 ),
+              ),
+              const SizedBox(height: 12),
+              TextButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: relState.lastCreatedInviteCode!));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Código copiado para a área de transferência!')),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 18),
+                label: const Text('Copiar Código'),
+                style: TextButton.styleFrom(foregroundColor: const Color(0xFF6366F1)),
               ),
               const SizedBox(height: 32),
               ElevatedButton(

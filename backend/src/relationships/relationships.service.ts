@@ -103,4 +103,30 @@ export class RelationshipsService {
     
     return data.map(item => item.relationships);
   }
+
+  async remove(relationshipId: string, userId: string) {
+    const supabase = this.supabaseService.getClient();
+
+    // Verify ownership or membership before and then delete
+    // In this MVP, we'll allow the creator to delete the whole relationship
+    const { data: relationship, error: findError } = await supabase
+      .from('relationships')
+      .select('id, created_by')
+      .eq('id', relationshipId)
+      .single();
+
+    if (findError || !relationship) throw new Error('Relacionamento não encontrado');
+    if (relationship.created_by !== userId) {
+      throw new Error('Apenas o criador pode excluir o relacionamento');
+    }
+
+    const { error: deleteError } = await supabase
+      .from('relationships')
+      .delete()
+      .eq('id', relationshipId);
+
+    if (deleteError) throw deleteError;
+
+    return { deleted: true };
+  }
 }

@@ -56,7 +56,7 @@ class ApiClient {
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final authState = ref.watch(authProvider);
-  // This would come from an environment config in a real app
-  const baseUrl = 'http://localhost:3000';
+  // Use 10.0.2.2 for Android emulator to access the host machine's localhost
+  const baseUrl = 'http://10.0.2.2:3000';
   return ApiClient(baseUrl: baseUrl, token: authState.token);
 });

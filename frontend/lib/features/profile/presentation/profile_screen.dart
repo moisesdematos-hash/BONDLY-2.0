@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/domain/auth_provider.dart';
+import '../../relationship/domain/relationship_provider.dart';
 import '../data/profile_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -69,6 +70,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ],
                   ),
+                  if (user?['role'] != 'premium') ...[
+                    const SizedBox(height: 24),
+                    _buildPremiumCallout(),
+                  ],
                   const SizedBox(height: 32),
                   _buildSectionTitle('Configurações'),
                   const SizedBox(height: 16),
@@ -77,7 +82,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _ProfileInfoItem(
                         icon: Icons.language,
                         label: 'Idioma',
-                        value: user?['language']?.toUpperCase() ?? 'PT-BR',
+                        value: user?['language']?.toUpperCase() ?? 'PT',
+                        canEdit: true,
+                        onEdit: () => _showLanguageDialog(user?['language'] ?? 'pt'),
                         trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
                       ),
                       _ProfileInfoItem(
@@ -94,6 +101,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('Suporte e Ajuda'),
+                  const SizedBox(height: 16),
+                  _buildInfoCard(
+                    items: [
+                      _ProfileInfoItem(
+                        icon: Icons.chat_outlined,
+                        label: 'WhatsApp',
+                        value: 'Falar com Moisés',
+                        trailing: const Icon(Icons.open_in_new, size: 18, color: Colors.greenAccent),
+                        onEdit: () => _launchURL('https://wa.me/244923394229'), // Assuming Angolan prefix +244 based on number format
+                      ),
+                      _ProfileInfoItem(
+                        icon: Icons.support_agent_outlined,
+                        label: 'E-mail',
+                        value: 'moisesdematos@hotmail.com',
+                        trailing: const Icon(Icons.open_in_new, size: 18, color: Color(0xFF6366F1)),
+                        onEdit: () => _launchURL('mailto:moisesdematos@hotmail.com?subject=Suporte Bondly'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('Zona de Perigo'),
+                  const SizedBox(height: 16),
+                  _buildDangerZone(user),
                   const SizedBox(height: 48),
                   _buildLogoutButton(),
                   const SizedBox(height: 100),
@@ -222,6 +254,66 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _buildPremiumCallout() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFACC15), Color(0xFFEAB308)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.amber.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.auto_awesome, color: Colors.black, size: 32),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Liberar Todo o Potencial',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Tenha acesso ao Coach de IA ilimitado.',
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.7),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/premium'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: const Text('Upgrade', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLogoutButton() {
     return ElevatedButton.icon(
       onPressed: () {
@@ -232,11 +324,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       label: const Text('Sair da Conta', style: TextStyle(fontWeight: FontWeight.bold)),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 18),
+        backgroundColor: Colors.white.withOpacity(0.05),
+        foregroundColor: Colors.white70,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        border: BorderSide(color: Colors.white.withOpacity(0.1)),
+        elevation: 0,
+      ),
+    );
+  }
+
+  Widget _buildDangerZone(Map<String, dynamic>? user) {
+    final relationshipState = ref.watch(relationshipProvider);
+    final hasRelationship = relationshipState.selectedRelationship != null;
+
+    return Column(
+      children: [
+        if (hasRelationship) ...[
+          _buildDangerButton(
+            label: 'Encerrar Relacionamento',
+            icon: Icons.heart_broken_outlined,
+            onPressed: () => _confirmDeletion(
+              title: 'Encerrar Relacionamento?',
+              content: 'Isso apagará todo o histórico do casal, memórias e progresso do jardim. Esta ação não pode ser desfeita.',
+              onConfirm: () async {
+                final relId = relationshipState.selectedRelationship!['id'];
+                await ref.read(relationshipProvider.notifier).deleteRelationship(relId);
+                if (mounted) Navigator.pushNamedAndRemoveUntil(context, '/relationship-setup', (route) => false);
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        _buildDangerButton(
+          label: 'Excluir Minha Conta',
+          icon: Icons.delete_forever_outlined,
+          onPressed: () => _confirmDeletion(
+            title: 'Excluir Conta Permanentemente?',
+            content: 'Todos os seus dados pessoais, fotos e conexões serão removidos para sempre de nossos servidores.',
+            onConfirm: () async {
+              await ref.read(authProvider.notifier).deleteAccount();
+              if (mounted) Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDangerButton({required String label, required IconData icon, required VoidCallback onPressed}) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 20),
+      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
         backgroundColor: Colors.redAccent.withOpacity(0.1),
         foregroundColor: Colors.redAccent,
+        minimumSize: const Size(double.infinity, 50),
+        alignment: Alignment.centerLeft,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         border: BorderSide(color: Colors.redAccent.withOpacity(0.2)),
         elevation: 0,
+      ),
+    );
+  }
+
+  void _confirmDeletion({required String title, required String content, required VoidCallback onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Text(content, style: const TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onConfirm();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Excluir', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }
@@ -291,6 +464,74 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw 'Could not launch $url';
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Não foi possível abrir o link: $e')),
+        );
+      }
+    }
+  }
+
+  void _showLanguageDialog(String currentLang) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text('Alterar Idioma', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Português', style: TextStyle(color: Colors.white)),
+              leading: Radio<String>(
+                value: 'pt',
+                groupValue: currentLang,
+                onChanged: (val) => _updateLanguage(val!),
+              ),
+              onTap: () => _updateLanguage('pt'),
+            ),
+            ListTile(
+              title: const Text('English', style: TextStyle(color: Colors.white)),
+              leading: Radio<String>(
+                value: 'en',
+                groupValue: currentLang,
+                onChanged: (val) => _updateLanguage(val!),
+              ),
+              onTap: () => _updateLanguage('en'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _updateLanguage(String lang) async {
+    try {
+      final updatedUser = await ref.read(profileServiceProvider).updateProfile(language: lang);
+      ref.read(authProvider.notifier).updateUserState(updatedUser);
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Idioma alterado para ${lang.toUpperCase()}!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao alterar idioma: $e')),
+        );
+      }
+    }
   }
 }
 

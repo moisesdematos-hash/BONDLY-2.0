@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/memory_provider.dart';
 import '../../relationship/domain/relationship_provider.dart';
@@ -97,15 +98,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              child: Image.network(
-                memory['image_url'],
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.white10,
-                  child: const Icon(Icons.broken_image, color: Colors.white24),
-                ),
-              ),
+              child: _buildMediaContent(memory),
             ),
           ),
           if (memory['caption'] != null && memory['caption'].isNotEmpty)
@@ -123,56 +116,113 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     );
   }
 
+  Widget _buildMediaContent(dynamic memory) {
+    final type = memory['media_type'] ?? 'image';
+    final url = memory['media_url'] ?? '';
+
+    if (type == 'video') {
+      return Container(
+        color: Colors.black26,
+        child: const Center(
+          child: Icon(Icons.play_circle_fill, color: Colors.white, size: 48),
+        ),
+      );
+    } else if (type == 'audio') {
+      return Container(
+        color: Colors.deepPurple.withOpacity(0.3),
+        child: const Center(
+          child: Icon(Icons.audiotrack, color: Colors.white, size: 48),
+        ),
+      );
+    } else {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.white10,
+          child: const Icon(Icons.broken_image, color: Colors.white24),
+        ),
+      );
+    }
+  }
+
   void _showAddMemoryDialog(BuildContext context, String? relationshipId) {
     final captionController = TextEditingController();
-    final urlController = TextEditingController(); // Simulado para MVP, em produção seria picker + storage
+    final urlController = TextEditingController(); 
+    String selectedType = 'image';
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Nova Memória', style: TextStyle(color: Colors.white)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: urlController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'URL da Imagem',
-                labelStyle: TextStyle(color: Colors.white54),
-              ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1E293B),
+            title: const Text('Nova Memória', style: TextStyle(color: Colors.white)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: selectedType,
+                  dropdownColor: const Color(0xFF1E293B),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo de Média',
+                    labelStyle: TextStyle(color: Colors.white54),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'image', child: Text('Fotografia')),
+                    DropdownMenuItem(value: 'video', child: Text('Vídeo')),
+                    DropdownMenuItem(value: 'audio', child: Text('Música / Áudio')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedType = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: urlController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'URL do ficheiro',
+                    labelStyle: TextStyle(color: Colors.white54),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: captionController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Legenda',
+                    labelStyle: TextStyle(color: Colors.white54),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: captionController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Legenda',
-                labelStyle: TextStyle(color: Colors.white54),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (relationshipId != null && urlController.text.isNotEmpty) {
-                ref.read(memoryProvider.notifier).addMemory(
-                      relationshipId,
-                      urlController.text,
-                      captionController.text,
-                    );
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Salvar'),
-          ),
-        ],
+              ElevatedButton(
+                onPressed: () {
+                  if (relationshipId != null && urlController.text.isNotEmpty) {
+                    ref.read(memoryProvider.notifier).addMemory(
+                          relationshipId,
+                          urlController.text,
+                          selectedType,
+                          captionController.text,
+                        );
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Salvar'),
+              ),
+            ],
+          );
+        }
       ),
     );
   }

@@ -14,6 +14,7 @@ import { GardenModule } from './garden/garden.module';
 import { MemoriesModule } from './memories/memories.module';
 import { DatesModule } from './dates/dates.module';
 import { NudgesModule } from './nudges/nudges.module';
+import { PaymentsModule } from './payments/payments.module';
 
 
 
@@ -36,6 +37,7 @@ import { NudgesModule } from './nudges/nudges.module';
     MemoriesModule,
     DatesModule,
     NudgesModule,
+    PaymentsModule,
 
 
 

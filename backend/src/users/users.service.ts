@@ -66,5 +66,16 @@ export class UsersService {
     if (error) throw error;
     return data;
   }
+
+  async remove(id: string) {
+    const { error } = await this.supabaseService
+      .getClient()
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { deleted: true };
+  }
 }
 
