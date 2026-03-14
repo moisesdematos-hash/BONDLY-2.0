@@ -131,3 +131,29 @@ USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = shared_
 
 CREATE POLICY "Users can delete own wishlists" ON shared_wishlists FOR DELETE
 USING (user_id = auth.uid());
+
+-- 6. Relationship Agreements (Regras/Acordos do Casal)
+CREATE TABLE IF NOT EXISTS relationship_agreements (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  relationship_id UUID NOT NULL REFERENCES relationships(id) ON DELETE CASCADE,
+  created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  is_agreed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE relationship_agreements ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view relationship agreements" ON relationship_agreements FOR SELECT
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relationship_agreements.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can propose agreements" ON relationship_agreements FOR INSERT
+WITH CHECK (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relationship_agreements.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can accept agreements" ON relationship_agreements FOR UPDATE
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relationship_agreements.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can delete agreements" ON relationship_agreements FOR DELETE
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = relationship_agreements.relationship_id AND user_id = auth.uid()));

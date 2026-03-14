@@ -16,6 +16,7 @@ import { DatesModule } from './dates/dates.module';
 import { NudgesModule } from './nudges/nudges.module';
 import { PaymentsModule } from './payments/payments.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
+import { AgreementsModule } from './agreements/agreements.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { WishlistsModule } from './wishlists/wishlists.module';
     NudgesModule,
     PaymentsModule,
     WishlistsModule,
+    AgreementsModule,
   ],
 })
 export class AppModule {}
