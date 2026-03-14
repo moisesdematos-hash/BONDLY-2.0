@@ -15,10 +15,7 @@ import { MemoriesModule } from './memories/memories.module';
 import { DatesModule } from './dates/dates.module';
 import { NudgesModule } from './nudges/nudges.module';
 import { PaymentsModule } from './payments/payments.module';
-
-
-
-
+import { WishlistsModule } from './wishlists/wishlists.module';
 
 @Module({
   imports: [
@@ -38,10 +35,7 @@ import { PaymentsModule } from './payments/payments.module';
     DatesModule,
     NudgesModule,
     PaymentsModule,
-
-
-
-
+    WishlistsModule,
   ],
 })
 export class AppModule {}

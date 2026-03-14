@@ -190,10 +190,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
         _buildActionCard(
           context,
+          title: 'Check-in',
+          icon: Icons.mood_outlined,
+          color: const Color(0xFFF472B6),
+          route: '/checkin',
+        ),
+        _buildActionCard(
+          context,
           title: 'Mural',
           icon: Icons.photo_library_outlined,
           color: const Color(0xFF6366F1),
           route: '/memory-wall',
+        ),
+        _buildActionCard(
+          context,
+          title: 'Wishlist',
+          icon: Icons.card_giftcard,
+          color: const Color(0xFFEAB308),
+          route: '/wishlist',
         ),
       ],
     );

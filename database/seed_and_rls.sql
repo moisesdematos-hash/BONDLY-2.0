@@ -104,3 +104,30 @@ USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = memorie
 
 CREATE POLICY "Users can insert relationship memories" ON memories FOR INSERT
 WITH CHECK (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = memories.relationship_id AND user_id = auth.uid()));
+
+-- 5. Shared Wishlist
+CREATE TABLE IF NOT EXISTS shared_wishlists (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  relationship_id UUID NOT NULL REFERENCES relationships(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  link_url TEXT,
+  is_purchased BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE shared_wishlists ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view relationship wishlists" ON shared_wishlists FOR SELECT
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = shared_wishlists.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can insert relationship wishlists" ON shared_wishlists FOR INSERT
+WITH CHECK (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = shared_wishlists.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can update relationship wishlists (mark as purchased)" ON shared_wishlists FOR UPDATE
+USING (EXISTS (SELECT 1 FROM relationship_spaces WHERE relationship_id = shared_wishlists.relationship_id AND user_id = auth.uid()));
+
+CREATE POLICY "Users can delete own wishlists" ON shared_wishlists FOR DELETE
+USING (user_id = auth.uid());
