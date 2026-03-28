@@ -1,6 +1,6 @@
-# Bondly Frontend 📱✨
+# Bondly 2.0 Frontend 📱✨
 
-A aplicação móvel do Bondly, construída com **Flutter** para proporcionar uma experiência emocional e premium aos casais.
+A versão premium da aplicação móvel do Bondly, construída com **Flutter** para proporcionar uma experiência emocional e de alta fidelidade aos casais.
 
 ## 🏗️ Estrutura de Pastas
 

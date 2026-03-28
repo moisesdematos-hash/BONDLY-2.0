@@ -1,10 +1,17 @@
-# Bondly - Fortalecendo Conexões Amoras 💖
+# Bondly 2.0 - Premium Edition ✨🚀
 
-O **Bondly** é uma plataforma completa desenhada para casais que desejam aprofundar a sua ligação através de gamificação, inteligência emocional e comunicação transparente.
+Esta é a versão **CONSOLIDADA e COMPLETA** do Bondly, unificando o projeto base com as melhorias premium da versão 2.0.
+
+## 🌟 O que há de novo no 2.0?
+
+- **Interface Glassmorphism de Luxo:** UI redesenhada com transparências, desfoques e gradientes premium.
+- **Novas Funcionalidades:** Agreements, Gratitude, Wishlist e o AI Date Planner.
+- **Ecossistema Unificado:** Landing Page, Backend (NestJS), Database (SQL) e Frontend (Flutter) em um só lugar.
+- **Visão Geral Interativa:** Veja `landing/overview.html` para uma prévia completa das telas.
 
 ## 🚀 Estrutura do Projeto
 
-O ecossistema Bondly é composto por três componentes principais:
+O ecossistema Bondly 2.0 é composto por:
 
 1.  **[Backend (NestJS)](./backend):** API robusta construída com Node.js, TypeScript e integrada com Supabase (PostgreSQL) e OpenAI.
 2.  **[Frontend (Flutter)](./frontend):** Aplicação móvel multiplataforma focada numa experiência de utilizador premium e animações fluidas.

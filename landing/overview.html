@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bondly — Frontend Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --primary: #6366F1;
+  --secondary: #2DD4BF;
+  --background: #0F172A;
+  --surface: #1E293B;
+  --accent: #8B5CF6;
+  --text: #FFFFFF;
+  --text-muted: rgba(255,255,255,0.6);
+  --text-dim: rgba(255,255,255,0.3);
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 80px 24px 60px;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15) 0%, transparent 50%);
+  animation: pulse 8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+.hero-content { position: relative; z-index: 1; }
+.hero .logo {
+  font-size: 56px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.hero .heart-icon {
+  font-size: 80px;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 16px;
+  animation: heartbeat 2s infinite;
+}
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+}
+.hero .subtitle {
+  color: var(--text-muted);
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hero .stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+.hero .stat { text-align: center; }
+.hero .stat-num { font-size: 32px; font-weight: 800; color: var(--secondary); }
+.hero .stat-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Architecture Section */
+.arch-section {
+  padding: 60px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.arch-section h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.arch-section .desc {
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  max-width: 700px;
+}
+.arch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.arch-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.arch-card h4 { color: var(--secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.arch-card code {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  white-space: pre-wrap;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  line-height: 1.5;
+}
+
+/* Navigation */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,23,42,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.nav-bar-inner {
+  display: flex;
+  gap: 4px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* Phone Frame */
+.screen-section {
+  padding: 60px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.screen-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.screen-header .icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.screen-header h2 { font-size: 28px; }
+.screen-header .route-tag {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--secondary);
+  font-family: monospace;
+}
+
+.phone-and-code {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .phone-and-code { grid-template-columns: 1fr; }
+  .arch-grid { grid-template-columns: 1fr; }
+}
+
+/* Phone */
+.phone-frame {
+  width: 375px;
+  border-radius: 40px;
+  border: 3px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+.phone-notch {
+  width: 150px;
+  height: 30px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.phone-screen {
+  min-height: 680px;
+  padding-bottom: 24px;
+}
+
+/* Code */
+.code-block {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden;
+  max-height: 680px;
+  overflow-y: auto;
+}
+.code-block-header {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-block-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-block pre {
+  padding: 16px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #CBD5E1;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
+.code-block pre .kw { color: #C084FC; }
+.code-block pre .fn { color: #67E8F9; }
+.code-block pre .str { color: #86EFAC; }
+.code-block pre .cmt { color: #64748B; }
+.code-block pre .num { color: #FCA5A5; }
+.code-block pre .cls { color: #FCD34D; }
+.code-block pre .ann { color: #FB923C; }
+
+/* Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* --- SCREEN SPECIFIC STYLES --- */
+
+/* Login */
+.login-bg {
+  background: var(--background);
+  text-align: center;
+  padding: 60px 32px;
+}
+.login-bg .login-heart { font-size: 80px; color: var(--primary); }
+.login-bg .brand { font-size: 32px; font-weight: 800; margin-top: 8px; }
+.login-bg .brand-sub { color: var(--text-muted); margin-bottom: 40px; }
+.login-input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.input-wrap { position: relative; }
+.input-wrap .material-icons-round {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--text-dim);
+}
+.login-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 12px;
+  cursor: pointer;
+}
+.login-link { color: var(--secondary); font-size: 14px; margin-top: 16px; display: inline-block; text-decoration: none; }
+
+/* Dashboard */
+.dash-bg {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+  padding: 20px 20px 32px;
+}
+.dash-appbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.dash-appbar h3 { font-size: 20px; }
+.avatar-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--glass);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Garden widget */
+.garden-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.garden-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.garden-title { font-size: 16px; font-weight: 700; }
+.garden-level { color: var(--secondary); font-weight: 600; font-size: 13px; }
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.garden-visual {
+  text-align: center;
+  padding: 16px 0;
+  font-size: 64px;
+}
+.xp-bar-container { margin-top: 8px; }
+.xp-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+.xp-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+.xp-fill { height: 100%; background: var(--primary); border-radius: 3px; width: 65%; }
+
+/* Nudge */
+.nudge-card {
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Status row */
+.status-row {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  display: flex;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.status-item {
+  flex: 1;
+  text-align: center;
+}
+.status-item .material-icons-round { font-size: 22px; color: var(--text-dim); }
+.status-item .done { color: var(--secondary); }
+.status-label { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+/* Action grid */
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.action-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.action-card .material-icons-round { font-size: 30px; margin-bottom: 8px; }
+.action-card .label { font-weight: 600; font-size: 14px; }
+
+/* Section label */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* Challenge teaser */
+.challenge-teaser {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.challenge-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  background: rgba(251,191,36,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* AI Coach teaser */
+.ai-teaser {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.ai-teaser h4 { font-size: 16px; font-weight: 700; }
+.ai-teaser p { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 4px; }
+
+/* Chat screen */
+.chat-bg {
+  background: linear-gradient(180deg, var(--background), var(--surface));
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 680px;
+}
+.chat-appbar {
+  background: rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.chat-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(99,102,241,0.2);
+  display: flex; align-items: center; justify-content: center;
+}
+.chat-name { font-size: 15px; font-weight: 700; }
+.chat-status { font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.chat-status .online-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; }
+.chat-messages { flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; }
+.msg-row { display: flex; align-items: flex-end; gap: 8px; }
+.msg-row.me { justify-content: flex-end; }
+.msg-row.them { justify-content: flex-start; }
+.msg-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.msg-row.me .msg-bubble {
+  background: var(--primary);
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+.msg-row.them .msg-bubble {
+  background: var(--glass);
+  border-bottom-left-radius: 4px;
+}
+.msg-tip { color: var(--secondary); font-size: 11px; font-style: italic; margin-top: 6px; text-align: right; }
+.chat-input-bar {
+  padding: 12px 16px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.02);
+}
+.chat-input {
+  flex: 1;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 10px 16px;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+.chat-input::placeholder { color: var(--text-dim); }
+.send-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.add-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Checkin */
+.checkin-bg {
+  background: linear-gradient(135deg, #1E1B4B, #312E81);
+  padding: 24px;
+}
+.checkin-partner-status {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.checkin-question {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  line-height: 1.3;
+}
+.mood-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+.mood-item {
+  text-align: center;
+  cursor: pointer;
+}
+.mood-circle {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  font-size: 26px;
+  transition: all 0.3s;
+}
+.mood-item.selected .mood-circle {
+  transform: scale(1.25);
+  box-shadow: 0 0 20px currentColor;
+}
+.mood-label { font-size: 11px; font-weight: 700; }
+.note-input {
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  color: white;
+  font-size: 14px;
+  resize: none;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+.note-input::placeholder { color: rgba(255,255,255,0.2); }
+.save-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.history-item {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.history-item .h-note { color: rgba(255,255,255,0.8); font-size: 13px; }
+.history-item .h-date { color: var(--text-dim); font-size: 11px; }
+
+/* Garden full */
+.garden-bg {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+  padding: 24px;
+  text-align: center;
+}
+.garden-big-visual {
+  font-size: 96px;
+  margin: 32px 0;
+  text-shadow: 0 0 40px rgba(45,212,191,0.3);
+}
+
+/* AI Coach */
+.aicoach-bg {
+  background: var(--background);
+  padding: 24px;
+}
+.aicoach-header h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.aicoach-header p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+.aicoach-textarea {
+  width: 100%;
+  background: var(--glass);
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  font-size: 15px;
+  resize: none;
+  font-family: inherit;
+  min-height: 120px;
+}
+.aicoach-textarea::placeholder { color: var(--text-dim); }
+.analyze-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 20px;
+  cursor: pointer;
+}
+.ai-result {
+  margin-top: 32px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(128,0,255,0.1));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 24px;
+  padding: 24px;
+}
+.ai-result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ai-result .conflict-badge {
+  background: rgba(248,113,113,0.2);
+  border: 1px solid rgba(248,113,113,0.5);
+  color: #F87171;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: auto;
+}
+.ai-result .suggestion-text { font-size: 15px; line-height: 1.6; margin-top: 12px; }
+.quick-tip {
+  background: var(--glass);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Memory Wall */
+.memory-bg {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+  padding: 16px;
+}
+.memory-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.memory-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.memory-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  background: rgba(255,255,255,0.05);
+}
+.memory-caption {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: white;
+}
+.fab {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+  cursor: pointer;
+}
+
+/* Simulation */
+.sim-bg {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+  padding: 24px;
+}
+.sim-header h3 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.sim-header p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+.sim-input-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 24px;
+}
+.sim-textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+  min-height: 100px;
+  margin-top: 12px;
+}
+.sim-textarea::placeholder { color: var(--text-dim); }
+.sim-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 20px;
+  cursor: pointer;
+}
+.sim-result {
+  margin-top: 32px;
+}
+.partner-bubble {
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px 20px 20px 0;
+  padding: 16px;
+  font-style: italic;
+  font-size: 15px;
+  margin: 12px 0 28px;
+  max-width: 85%;
+}
+.sim-feedback {
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+/* Challenges */
+.challenges-bg {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  padding: 0;
+}
+.challenges-hero {
+  padding: 48px 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.challenges-hero h3 { font-size: 22px; font-weight: 700; position: relative; z-index: 1; }
+.challenges-hero .bg-icon {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  font-size: 160px;
+  color: rgba(255,255,255,0.07);
+}
+.tab-bar {
+  display: flex;
+  background: var(--background);
+  padding: 0;
+}
+.tab-btn {
+  flex: 1;
+  padding: 14px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn.active { color: white; border-bottom-color: var(--primary); }
+.challenges-content {
+  background: var(--background);
+  padding: 20px;
+}
+.challenge-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.challenge-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.points-badge {
+  background: rgba(251,191,36,0.1);
+  color: #FBBF24;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+}
+.challenge-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.challenge-card p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+.challenge-action-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+/* Date Planner */
+.date-bg {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+  padding: 24px;
+}
+.date-header h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.date-header p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+.date-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.date-type-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.date-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.date-card .desc { color: white; font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
+.date-why {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.date-why .why-label { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+.date-why .why-text { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+/* Questions */
+.questions-bg {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  padding: 32px 24px;
+  text-align: center;
+}
+.questions-bg .q-icon { font-size: 56px; color: #FCD34D; margin-bottom: 20px; display: block; }
+.questions-bg .q-text { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 40px; }
+.q-answer-input {
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 24px;
+  padding: 24px;
+  color: white;
+  font-size: 16px;
+  resize: none;
+  font-family: inherit;
+  min-height: 100px;
+  text-align: left;
+}
+.q-answer-input::placeholder { color: rgba(255,255,255,0.5); }
+.q-submit-btn {
+  width: 100%;
+  padding: 18px;
+  background: white;
+  color: #4F46E5;
+  border: none;
+  border-radius: 24px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+/* Scroll */
+.code-block::-webkit-scrollbar { width: 6px; }
+.code-block::-webkit-scrollbar-track { background: transparent; }
+.code-block::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="heart-icon material-icons-round">favorite</span>
+    <div class="logo">Bondly</div>
+    <div class="subtitle">AI Relationship Coach — Flutter Frontend</div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">12</div><div class="stat-label">Telas</div></div>
+      <div class="stat"><div class="stat-num">14</div><div class="stat-label">Features</div></div>
+      <div class="stat"><div class="stat-num">48</div><div class="stat-label">Arquivos .dart</div></div>
+      <div class="stat"><div class="stat-num">1</div><div class="stat-label">Tema Dark</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-bar-inner">
+    <button class="nav-btn active" onclick="scrollToScreen('arch')">Arquitetura</button>
+    <button class="nav-btn" onclick="scrollToScreen('login')">Login</button>
+    <button class="nav-btn" onclick="scrollToScreen('dashboard')">Dashboard</button>
+    <button class="nav-btn" onclick="scrollToScreen('chat')">Chat</button>
+    <button class="nav-btn" onclick="scrollToScreen('checkin')">Check-in</button>
+    <button class="nav-btn" onclick="scrollToScreen('garden')">Jardim</button>
+    <button class="nav-btn" onclick="scrollToScreen('aicoach')">AI Coach</button>
+    <button class="nav-btn" onclick="scrollToScreen('memory')">Memórias</button>
+    <button class="nav-btn" onclick="scrollToScreen('simulation')">Simulador</button>
+    <button class="nav-btn" onclick="scrollToScreen('challenges')">Desafios</button>
+    <button class="nav-btn" onclick="scrollToScreen('dateplanner')">Date Planner</button>
+    <button class="nav-btn" onclick="scrollToScreen('questions')">Perguntas</button>
+  </div>
+</nav>
+
+<!-- ARCHITECTURE -->
+<section id="arch" class="arch-section">
+  <h2>📐 Arquitetura do Frontend</h2>
+  <p class="desc">Projeto Flutter com Clean Architecture, Riverpod para estado, e design system glassmorphism.</p>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h4>Rotas (main.dart)</h4>
+      <code>/login → LoginScreen
+/register → RegisterScreen
+/dashboard → DashboardScreen
+/relationship-setup → RelationshipSetupScreen
+/questions → QuestionsScreen
+/checkin → CheckinScreen
+/challenges → ChallengesScreen
+/ai-coach → AiCoachScreen
+/simulation → SimulationScreen
+/chat → BondlyChatScreen
+/profile → ProfileScreen
+/memory-wall → MemoryWallScreen
+/date-planner → DatePlannerScreen</code>
+    </div>
+    <div class="arch-card">
+      <h4>Tema (bondly_theme.dart)</h4>
+      <code>primary:    #6366F1 (Indigo)
+secondary:  #2DD4BF (Teal)
+background: #0F172A (Navy)
+surface:    #1E293B (Slate)
+accent:     #8B5CF6 (Purple)
+
+Theme: Dark mode
+Glassmorphism decorations
+Rounded corners (24px)
+Gradient backgrounds</code>
+    </div>
+    <div class="arch-card">
+      <h4>Feature Structure</h4>
+      <code>lib/features/
+├── auth/       (login, register)
+├── dashboard/  (home screen)
+├── chat/       (messaging c/ sentiment)
+├── checkin/    (emotional check-in)
+├── garden/     (connection garden)
+├── ai_coach/   (AI analysis)
+├── simulation/ (dialogue rehearsal)
+├── challenges/ (weekly challenges)
+├── memory_wall/(photo memories)
+├── dates/      (date night planner)
+├── nudges/     (AI nudges)
+├── questions/  (daily questions)
+├── profile/    (user profile)
+└── relationship/ (setup)</code>
+    </div>
+    <div class="arch-card">
+      <h4>State Management</h4>
+      <code>Pattern: Riverpod + Notifier
+Each feature has:
+  data/   → Service (API calls)
+  domain/ → Provider + State
+  presentation/ → UI Screen
+
+Dependencies:
+  flutter_riverpod
+  supabase_flutter
+  animate_do
+  http</code>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- LOGIN SCREEN -->
+<section id="login" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(99,102,241,0.15);">
+      <span class="material-icons-round" style="color:#6366F1;">login</span>
+    </div>
+    <div>
+      <h2>Login</h2>
+      <span class="route-tag">/login</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen login-bg">
+        <span class="login-heart material-icons-round">favorite</span>
+        <div class="brand">Bondly</div>
+        <div class="brand-sub">AI Relationship Coach</div>
+        <div class="input-wrap">
+          <span class="material-icons-round">email</span>
+          <input class="login-input" placeholder="E-mail" disabled>
+        </div>
+        <div class="input-wrap">
+          <span class="material-icons-round">lock</span>
+          <input class="login-input" type="password" placeholder="Senha" disabled>
+        </div>
+        <button class="login-btn">Entrar</button>
+        <a href="#" class="login-link">Não tem uma conta? Cadastre-se</a>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        login_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">LoginScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="ann">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="kw">return</span> <span class="cls">Scaffold</span>(
+      body: <span class="cls">Column</span>(
+        children: [
+          <span class="cls">Icon</span>(Icons.favorite, size: <span class="num">100</span>,
+            color: <span class="cls">Color</span>(<span class="num">0xFF6366F1</span>)),
+          <span class="cls">Text</span>(<span class="str">'Bondly'</span>, style: ...),
+          <span class="cls">Text</span>(<span class="str">'AI Relationship Coach'</span>),
+          <span class="cls">TextField</span>(
+            decoration: <span class="cls">InputDecoration</span>(
+              labelText: <span class="str">'E-mail'</span>,
+              prefixIcon: <span class="cls">Icon</span>(Icons.email),
+            ),
+          ),
+          <span class="cls">TextField</span>(obscureText: <span class="kw">true</span>, ...),
+          <span class="cls">ElevatedButton</span>(
+            onPressed: () => ref.read(authProvider
+              .notifier).login(email, password),
+            child: <span class="cls">Text</span>(<span class="str">'Entrar'</span>),
+          ),
+          <span class="cls">TextButton</span>(
+            child: <span class="cls">Text</span>(<span class="str">'Não tem conta? Cadastre-se'</span>),
+            onPressed: () => Navigator
+              .pushNamed(context, <span class="str">'/register'</span>),
+          ),
+        ],
+      ),
+    );
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(99,102,241,0.15);">
+      <span class="material-icons-round" style="color:#6366F1;">dashboard</span>
+    </div>
+    <div>
+      <h2>Dashboard</h2>
+      <span class="route-tag">/dashboard</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen dash-bg">
+        <div class="dash-appbar">
+          <h3>Olá, Maria! ✨</h3>
+          <div class="avatar-btn"><span class="material-icons-round" style="font-size:18px;color:white;">person_outline</span></div>
+        </div>
+
+        <!-- Garden Widget -->
+        <div class="garden-card">
+          <div class="garden-header">
+            <div>
+              <div class="garden-title">Jardim da Conexão</div>
+              <div class="garden-level">Nível 5</div>
+            </div>
+            <div class="health-badge" style="background:rgba(45,212,191,0.1);color:#2DD4BF;border:1px solid rgba(45,212,191,0.3);">
+              <span class="material-icons-round" style="font-size:14px;">favorite</span> 82%
+            </div>
+          </div>
+          <div class="garden-visual">🌸</div>
+          <div class="xp-bar-container">
+            <div class="xp-label"><span>Experiência</span><span>325 / 500 XP</span></div>
+            <div class="xp-bar"><div class="xp-fill"></div></div>
+          </div>
+        </div>
+
+        <!-- Nudge -->
+        <div class="nudge-card">
+          <span class="material-icons-round" style="color:#FBBF24;font-size:18px;">priority_high</span>
+          <span>Que tal enviar uma mensagem carinhosa hoje? Seu parceiro pode estar precisando. 💛</span>
+        </div>
+
+        <!-- Status row -->
+        <div class="status-row">
+          <div class="status-item">
+            <span class="material-icons-round done">check_circle</span>
+            <div class="status-label">Questão</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+          <div class="status-item">
+            <span class="material-icons-round" style="color:var(--text-dim);">mood</span>
+            <div class="status-label">Check-in</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+          <div class="status-item">
+            <span class="material-icons-round done">check_circle</span>
+            <div class="status-label">Parceiro</div>
+          </div>
+        </div>
+
+        <div class="section-label">Ações Rápidas</div>
+        <div class="action-grid">
+          <div class="action-card">
+            <span class="material-icons-round" style="color:#6366F1;">chat_bubble_outline</span>
+            <div class="label">Chat</div>
+          </div>
+          <div class="action-card">
+            <span class="material-icons-round" style="color:#2DD4BF;">psychology</span>
+            <div class="label">Ensaio</div>
+          </div>
+          <div class="action-card">
+            <span class="material-icons-round" style="color:#FB923C;">question_answer</span>
+            <div class="label">Perguntas</div>
+          </div>
+          <div class="action-card">
+            <span class="material-icons-round" style="color:#F472B6;">mood</span>
+            <div class="label">Check-in</div>
+          </div>
+        </div>
+
+        <div class="section-label">Desafios da Semana</div>
+        <div class="challenge-teaser">
+          <div class="challenge-icon"><span class="material-icons-round" style="color:#FBBF24;">emoji_events</span></div>
+          <div style="flex:1;">
+            <div style="font-weight:700;">7 dias de mensagens</div>
+            <div style="color:var(--text-dim);font-size:12px;">Enviem uma mensagem carinhosa todos os dias</div>
+          </div>
+          <span class="material-icons-round" style="color:var(--text-dim);font-size:20px;">chevron_right</span>
+        </div>
+
+        <div class="ai-teaser">
+          <div style="flex:1;">
+            <h4>Precisa de um conselho?</h4>
+            <p>Bondly AI Coach está pronto para te ajudar com sabedoria e empatia.</p>
+          </div>
+          <span class="material-icons-round" style="font-size:32px;">auto_fix_high</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        dashboard_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">DashboardScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="ann">@override</span>
+  <span class="kw">void</span> <span class="fn">initState</span>() {
+    <span class="cmt">// Carrega: challenges, questions, checkins,</span>
+    <span class="cmt">// garden stats e nudges ao abrir</span>
+    ref.read(challengesProvider.notifier)
+      .fetchChallenges(relationshipId);
+    ref.read(gardenProvider.notifier)
+      .fetchStats(relationshipId);
+    ref.read(nudgeProvider.notifier)
+      .fetchNudge(relationshipId);
+  }
+
+  <span class="ann">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="kw">return</span> <span class="cls">Scaffold</span>(
+      appBar: <span class="cls">AppBar</span>(
+        title: <span class="cls">Text</span>(<span class="str">'Olá, \${name}! ✨'</span>),
+      ),
+      body: <span class="cls">SingleChildScrollView</span>(
+        children: [
+          <span class="cls">GardenWidget</span>(),      <span class="cmt">// Jardim</span>
+          <span class="cls">NudgeWidget</span>(),       <span class="cmt">// AI Nudge</span>
+          _buildDynamicStatus(), <span class="cmt">// Status</span>
+          _buildActionGrid(),    <span class="cmt">// Grid 2x2</span>
+          _buildChallengeSection(),
+          _buildAICoachTeaser(),
+          _buildDatePlannerTeaser(),
+        ],
+      ),
+    );
+  }
+
+  <span class="cls">Widget</span> <span class="fn">_buildActionGrid</span>() {
+    <span class="kw">return</span> <span class="cls">GridView</span>.count(
+      crossAxisCount: <span class="num">2</span>,
+      children: [
+        <span class="cmt">// Chat, Ensaio, Perguntas, Check-in, Mural</span>
+        _buildActionCard(title: <span class="str">'Chat'</span>,
+          icon: Icons.chat_bubble, route: <span class="str">'/chat'</span>),
+        _buildActionCard(title: <span class="str">'Ensaio'</span>,
+          icon: Icons.psychology, route: <span class="str">'/simulation'</span>),
+        ...
+      ],
+    );
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CHAT -->
+<section id="chat" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(99,102,241,0.15);">
+      <span class="material-icons-round" style="color:#6366F1;">chat</span>
+    </div>
+    <div>
+      <h2>Chat com Análise de Sentimento</h2>
+      <span class="route-tag">/chat</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen chat-bg">
+        <div class="chat-appbar">
+          <span class="material-icons-round" style="color:var(--text-muted);font-size:20px;">arrow_back</span>
+          <div class="chat-avatar"><span class="material-icons-round" style="font-size:16px;color:#6366F1;">favorite</span></div>
+          <div>
+            <div class="chat-name">João & Maria</div>
+            <div class="chat-status"><span class="online-dot"></span>Clima: Positivo</div>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="msg-row them">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.1);flex-shrink:0;"></div>
+            <div class="msg-bubble">Oi amor, como foi seu dia? Senti saudade 💕</div>
+          </div>
+          <div class="msg-row me">
+            <div class="msg-bubble">Foi corrido mas estou bem! Pensei em você o dia todo 😊</div>
+            <span class="material-icons-round" style="font-size:14px;color:#2DD4BF;">sentiment_very_satisfied</span>
+          </div>
+          <div style="text-align:right;">
+            <div class="msg-tip">💡 Tom afetuoso detectado. Continue assim!</div>
+          </div>
+          <div class="msg-row them">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.1);flex-shrink:0;"></div>
+            <div class="msg-bubble">Que bom! Vamos fazer algo especial no fim de semana?</div>
+          </div>
+          <div class="msg-row me">
+            <div class="msg-bubble">Adoraria! Vou pensar em algo surpresa ✨</div>
+            <span class="material-icons-round" style="font-size:14px;color:#2DD4BF;">sentiment_very_satisfied</span>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <button class="add-btn"><span class="material-icons-round" style="font-size:18px;">add</span></button>
+          <input class="chat-input" placeholder="Fale com o coração..." disabled>
+          <button class="send-btn"><span class="material-icons-round" style="font-size:18px;">send</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        chat_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">BondlyChatScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Chat com análise de sentimento em tempo real</span>
+  <span class="cmt">// Cada mensagem tem um sentiment_score (0.0–1.0)</span>
+
+  <span class="cls">Widget</span> <span class="fn">_buildMessageList</span>() {
+    <span class="kw">return</span> <span class="cls">ListView</span>.builder(
+      reverse: <span class="kw">true</span>,
+      itemBuilder: (ctx, i) {
+        <span class="kw">final</span> msg = chatState.messages[i];
+        <span class="kw">final</span> isMe = msg[<span class="str">'sender_id'</span>] == userId;
+        <span class="kw">return</span> <span class="cls">_ChatBubble</span>(
+          message: msg, isMe: isMe);
+      },
+    );
+  }
+}
+
+<span class="kw">class</span> <span class="cls">_ChatBubble</span> {
+  <span class="cmt">// Bolhas com bordas assimétricas</span>
+  <span class="cmt">// Indicador de sentimento por mensagem</span>
+  <span class="cmt">// Tips de IA inline quando relevante</span>
+
+  sentiment > <span class="num">0.7</span> → 😊 <span class="str">Verde (positivo)</span>
+  sentiment < <span class="num">0.4</span> → 😟 <span class="str">Vermelho (alerta)</span>
+  
+  <span class="cmt">// Dica contextual da IA:</span>
+  <span class="kw">if</span> (message[<span class="str">'meta'</span>]?[<span class="str">'tip'</span>] != <span class="kw">null</span>)
+    <span class="cls">Text</span>(<span class="str">'💡 \${tip}'</span>,
+      style: <span class="cls">TextStyle</span>(
+        color: <span class="cls">Color</span>(<span class="num">0xFF2DD4BF</span>)));
+}
+
+<span class="kw">class</span> <span class="cls">_SentimentIndicator</span> {
+  <span class="cmt">// Ícone que muda baseado no score</span>
+  <span class="cmt">// sentiment_very_satisfied → positivo</span>
+  <span class="cmt">// sentiment_neutral → neutro</span>
+  <span class="cmt">// sentiment_very_dissatisfied → negativo</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CHECK-IN -->
+<section id="checkin" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(244,114,182,0.15);">
+      <span class="material-icons-round" style="color:#F472B6;">mood</span>
+    </div>
+    <div>
+      <h2>Check-in Emocional</h2>
+      <span class="route-tag">/checkin</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen checkin-bg">
+        <div class="checkin-partner-status">
+          <span class="material-icons-round" style="font-size:18px;color:#FBBF24;">stars</span>
+          <span>Seu parceiro já abriu o coração hoje! ✨</span>
+        </div>
+        <div class="checkin-question">Como está seu coração no relacionamento hoje?</div>
+        <div class="mood-row">
+          <div class="mood-item"><div class="mood-circle" style="color:#F87171;border-color:rgba(248,113,113,0.3);">😢</div><div class="mood-label" style="color:#F87171;"></div></div>
+          <div class="mood-item"><div class="mood-circle" style="color:#FB923C;border-color:rgba(251,146,60,0.3);">😕</div><div class="mood-label" style="color:#FB923C;"></div></div>
+          <div class="mood-item"><div class="mood-circle" style="color:#FBBF24;border-color:rgba(251,191,36,0.3);">😐</div><div class="mood-label" style="color:#FBBF24;"></div></div>
+          <div class="mood-item selected"><div class="mood-circle" style="color:#4ADE80;border-color:#4ADE80;background:rgba(74,222,128,0.2);box-shadow:0 0 20px rgba(74,222,128,0.3);">😊</div><div class="mood-label" style="color:#4ADE80;">Bem</div></div>
+          <div class="mood-item"><div class="mood-circle" style="color:#2DD4BF;border-color:rgba(45,212,191,0.3);">🤩</div><div class="mood-label" style="color:#2DD4BF;"></div></div>
+        </div>
+        <div style="color:var(--text-muted);font-size:14px;font-weight:500;margin-bottom:10px;">Alguma nota sobre hoje? (Opcional)</div>
+        <textarea class="note-input" placeholder="Como foi a conexão hoje..." rows="3" disabled></textarea>
+        <button class="save-btn">Salvar Check-in Diário</button>
+        <div style="margin-top:40px;">
+          <div style="font-size:18px;font-weight:700;margin-bottom:14px;">Histórico Recente</div>
+          <div class="history-item">
+            <span style="font-size:22px;">😊</span>
+            <div><div class="h-note">Dia leve e cheio de carinho</div><div class="h-date">2026-03-17</div></div>
+          </div>
+          <div class="history-item">
+            <span style="font-size:22px;">🤩</span>
+            <div><div class="h-note">Melhor dia juntos!</div><div class="h-date">2026-03-16</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        checkin_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">CheckinScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="kw">int</span> _selectedMood = <span class="num">3</span>;
+
+  <span class="cmt">// 5 níveis de humor com animação</span>
+  <span class="kw">final</span> _moods = [
+    {<span class="str">'value'</span>: <span class="num">1</span>, <span class="str">'label'</span>: <span class="str">'Péssimo'</span>,  <span class="str">'color'</span>: <span class="num">#F87171</span>},
+    {<span class="str">'value'</span>: <span class="num">2</span>, <span class="str">'label'</span>: <span class="str">'Triste'</span>,   <span class="str">'color'</span>: <span class="num">#FB923C</span>},
+    {<span class="str">'value'</span>: <span class="num">3</span>, <span class="str">'label'</span>: <span class="str">'Ok'</span>,       <span class="str">'color'</span>: <span class="num">#FBBF24</span>},
+    {<span class="str">'value'</span>: <span class="num">4</span>, <span class="str">'label'</span>: <span class="str">'Bem'</span>,      <span class="str">'color'</span>: <span class="num">#4ADE80</span>},
+    {<span class="str">'value'</span>: <span class="num">5</span>, <span class="str">'label'</span>: <span class="str">'Incrível'</span>, <span class="str">'color'</span>: <span class="num">#2DD4BF</span>},
+  ];
+
+  <span class="cls">Widget</span> <span class="fn">_buildMoodItem</span>(mood) {
+    <span class="kw">return</span> <span class="cls">AnimatedScale</span>(
+      scale: isSelected ? <span class="num">1.3</span> : <span class="num">1.0</span>,
+      curve: <span class="cls">Curves</span>.elasticOut,
+      child: <span class="cls">Container</span>(
+        decoration: <span class="cls">BoxDecoration</span>(
+          boxShadow: isSelected ? [
+            <span class="cls">BoxShadow</span>(color: mood[<span class="str">'color'</span>]
+              .withOpacity(<span class="num">0.3</span>), blurRadius: <span class="num">15</span>)
+          ] : [],
+        ),
+      ),
+    );
+  }
+
+  <span class="cmt">// Status do parceiro em tempo real</span>
+  <span class="cls">Widget</span> <span class="fn">_buildPartnerStatus</span>(state) {
+    <span class="kw">return</span> <span class="cls">Row</span>(children: [
+      <span class="cls">Icon</span>(state.partnerCheckedInToday
+        ? Icons.stars : Icons.hourglass_empty),
+      <span class="cls">Text</span>(state.partnerCheckedInToday
+        ? <span class="str">'Parceiro abriu o coração! ✨'</span>
+        : <span class="str">'Aguardando check-in...'</span>),
+    ]);
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- GARDEN -->
+<section id="garden" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(45,212,191,0.15);">
+      <span class="material-icons-round" style="color:#2DD4BF;">eco</span>
+    </div>
+    <div>
+      <h2>Jardim da Conexão</h2>
+      <span class="route-tag">Widget no Dashboard</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen garden-bg">
+        <div style="margin-top:24px;">
+          <div style="font-size:24px;font-weight:800;">Jardim da Conexão</div>
+          <div style="color:#2DD4BF;font-weight:600;font-size:16px;margin-top:4px;">Nível 7</div>
+        </div>
+        <div class="garden-big-visual">✨</div>
+        <div class="health-badge" style="background:rgba(45,212,191,0.1);color:#2DD4BF;border:1px solid rgba(45,212,191,0.3);display:inline-flex;padding:8px 20px;font-size:18px;margin-bottom:32px;">
+          <span class="material-icons-round" style="font-size:20px;">favorite</span> 92%
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:24px;margin-top:24px;text-align:left;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:16px;">Como o Jardim Evolui:</div>
+          <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+            <div style="text-align:center;">
+              <div style="font-size:36px;">🌱</div>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Semente<br>Nível 1-2</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:36px;">🌿</div>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Broto<br>Nível 3-4</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:36px;">🌸</div>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Flor<br>Nível 5-6</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:36px;">✨</div>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Pleno<br>Nível 7+</div>
+            </div>
+          </div>
+          <div style="margin-top:24px;">
+            <div class="xp-label"><span>Experiência</span><span>680 / 700 XP</span></div>
+            <div class="xp-bar"><div class="xp-fill" style="width:97%;"></div></div>
+          </div>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:16px;margin-top:16px;text-align:left;font-size:13px;">
+          <div style="font-weight:700;margin-bottom:8px;">Saúde depende de:</div>
+          <div style="color:var(--text-muted);">
+            ❤️ Check-ins diários<br>
+            💬 Frequência de conversa<br>
+            🎯 Desafios completados<br>
+            📝 Perguntas respondidas
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        garden_widget.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">GardenWidget</span> <span class="kw">extends</span> <span class="cls">ConsumerWidget</span> {
+  <span class="cmt">// Visual dinâmico baseado em level + health</span>
+
+  <span class="cls">Widget</span> <span class="fn">_buildGardenVisual</span>(level, health) {
+    <span class="kw">if</span> (health < <span class="num">40</span>) {
+      icon = Icons.eco_outlined;  <span class="cmt">// Murcho</span>
+      color = Colors.brown;
+    } <span class="kw">else if</span> (level < <span class="num">3</span>) {
+      icon = Icons.eco;           <span class="cmt">// Broto</span>
+      color = Colors.greenAccent;
+    } <span class="kw">else if</span> (level < <span class="num">7</span>) {
+      icon = Icons.local_florist; <span class="cmt">// Flor</span>
+      color = Colors.pinkAccent;
+    } <span class="kw">else</span> {
+      icon = Icons.auto_awesome;  <span class="cmt">// Pleno</span>
+      color = Colors.amberAccent;
+    }
+
+    <span class="kw">return</span> <span class="cls">TweenAnimationBuilder</span>&lt;double&gt;(
+      tween: <span class="cls">Tween</span>(begin: <span class="num">0.8</span>, end: <span class="num">1.0</span>),
+      duration: <span class="cls">Duration</span>(seconds: <span class="num">2</span>),
+      curve: <span class="cls">Curves</span>.easeInOutSine,
+      child: <span class="cls">Container</span>(
+        boxShadow: [<span class="cls">BoxShadow</span>(
+          color: color.withOpacity(<span class="num">0.2</span>),
+          blurRadius: <span class="num">30</span>, spreadRadius: <span class="num">10</span>)],
+        child: <span class="cls">Icon</span>(icon, size: size, color: color),
+      ),
+    );
+  }
+
+  <span class="cls">Widget</span> <span class="fn">_buildHealthIndicator</span>(health) {
+    <span class="cmt">// Verde > 70%, Amarelo > 30%, Vermelho < 30%</span>
+    Color color = health > <span class="num">70</span>
+      ? <span class="cls">Color</span>(<span class="num">0xFF2DD4BF</span>)
+      : health > <span class="num">30</span> ? Colors.amberAccent
+      : Colors.redAccent;
+  }
+
+  <span class="cls">Widget</span> <span class="fn">_buildXpBar</span>(xp, max) {
+    <span class="kw">return</span> <span class="cls">LinearProgressIndicator</span>(
+      value: (xp / max).clamp(<span class="num">0.0</span>, <span class="num">1.0</span>),
+      color: <span class="cls">Color</span>(<span class="num">0xFF6366F1</span>),
+    );
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- AI COACH -->
+<section id="aicoach" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(139,92,246,0.15);">
+      <span class="material-icons-round" style="color:#8B5CF6;">psychology</span>
+    </div>
+    <div>
+      <h2>Bondly AI Coach</h2>
+      <span class="route-tag">/ai-coach</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen aicoach-bg">
+        <div class="aicoach-header">
+          <h3>O que está acontecendo?</h3>
+          <p>Descreva a situação ou cole uma mensagem. Eu te ajudarei a entender os sentimentos envolvidos.</p>
+        </div>
+        <textarea class="aicoach-textarea" placeholder="Ex: Meu parceiro disse que está cansado e eu não sei o que responder..." disabled></textarea>
+        <button class="analyze-btn">Analisar com IA</button>
+        <div class="ai-result">
+          <div class="ai-result-header">
+            <span class="material-icons-round" style="color:#818CF8;font-size:26px;">psychology</span>
+            <div>
+              <div style="color:var(--text-muted);font-size:11px;">Análise da IA</div>
+              <div style="font-weight:700;font-size:15px;">Tom Detectado: Frustração</div>
+            </div>
+            <span class="conflict-badge">Risco de Conflito</span>
+          </div>
+          <div style="font-weight:700;color:#818CF8;font-size:13px;">Sugestão do Coach:</div>
+          <div class="suggestion-text" style="font-size:14px;line-height:1.6;margin-top:8px;color:var(--text-muted);">
+            Seu parceiro pode estar expressando cansaço emocional, não físico. Tente responder com validação: "Eu entendo que você está esgotado. O que posso fazer para te ajudar?"
+          </div>
+          <div class="quick-tip">
+            <span class="material-icons-round" style="color:#FBBF24;font-size:18px;">auto_awesome</span>
+            <span style="color:var(--text-muted);">Evite sugerir soluções imediatas. Às vezes, só ouvir já é o suficiente.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        ai_coach_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">AiCoachScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Tela de coaching com IA</span>
+  <span class="cmt">// Recebe texto → analisa emoção → sugere resposta</span>
+
+  <span class="cls">ElevatedButton</span>(
+    onPressed: () {
+      ref.read(aiCoachProvider.notifier)
+        .<span class="fn">getSuggestion</span>(
+          message: text,
+          relationshipType: <span class="str">'casal'</span>,
+        );
+    },
+    child: <span class="cls">Text</span>(<span class="str">'Analisar com IA'</span>),
+  ),
+}
+
+<span class="cmt">// Resposta da IA renderizada em:</span>
+<span class="kw">class</span> <span class="cls">_AiSuggestionCard</span> {
+  <span class="cmt">// state.emotion → Tom detectado</span>
+  <span class="cmt">// state.suggestion → Sugestão principal</span>
+  <span class="cmt">// state.hasConflict → Badge de risco</span>
+  <span class="cmt">// state.quickTip → Dica rápida</span>
+
+  <span class="cls">Container</span>(
+    decoration: <span class="cls">BoxDecoration</span>(
+      gradient: <span class="cls">LinearGradient</span>(
+        colors: [
+          <span class="cls">Color</span>(<span class="num">0xFF6366F1</span>).withOpacity(<span class="num">0.15</span>),
+          Colors.purple.withOpacity(<span class="num">0.1</span>),
+        ],
+      ),
+      border: <span class="cls">Border</span>.all(
+        color: <span class="cls">Color</span>(<span class="num">0xFF6366F1</span>)
+          .withOpacity(<span class="num">0.3</span>)),
+    ),
+    child: <span class="cls">Column</span>([
+      <span class="cmt">// Header com ícone + emoção</span>
+      <span class="cmt">// Badge de conflito (se houver)</span>
+      <span class="cmt">// Texto da sugestão</span>
+      <span class="cmt">// Quick tip com ícone ✨</span>
+    ]),
+  );
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MEMORY WALL -->
+<section id="memory" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(99,102,241,0.15);">
+      <span class="material-icons-round" style="color:#6366F1;">photo_library</span>
+    </div>
+    <div>
+      <h2>Mural de Memórias</h2>
+      <span class="route-tag">/memory-wall</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame" style="position:relative;">
+      <div class="phone-notch"></div>
+      <div class="phone-screen memory-bg" style="position:relative;">
+        <div style="margin-bottom:16px;">
+          <span class="material-icons-round" style="color:var(--text-muted);font-size:20px;">arrow_back</span>
+          <span style="font-size:18px;font-weight:700;margin-left:12px;">Mural de Memórias</span>
+        </div>
+        <div class="memory-grid">
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);display:flex;align-items:center;justify-content:center;font-size:48px;">🌅</div>
+            <div class="memory-caption">Pôr do sol na praia</div>
+          </div>
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #6366F1, #8B5CF6);display:flex;align-items:center;justify-content:center;font-size:48px;">🎂</div>
+            <div class="memory-caption">Aniversário juntos</div>
+          </div>
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #2DD4BF, #14B8A6);display:flex;align-items:center;justify-content:center;font-size:48px;">🏔️</div>
+            <div class="memory-caption">Primeira viagem</div>
+          </div>
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #FB923C, #F97316);display:flex;align-items:center;justify-content:center;font-size:48px;">🍕</div>
+            <div class="memory-caption">Date night favorito</div>
+          </div>
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #F472B6, #EC4899);display:flex;align-items:center;justify-content:center;font-size:48px;">💐</div>
+            <div class="memory-caption">Flores surpresa</div>
+          </div>
+          <div class="memory-card">
+            <div class="memory-img" style="background:linear-gradient(135deg, #A78BFA, #7C3AED);display:flex;align-items:center;justify-content:center;font-size:48px;">🎄</div>
+            <div class="memory-caption">Natal em família</div>
+          </div>
+        </div>
+        <button class="fab" style="position:sticky;float:right;margin-top:16px;">
+          <span class="material-icons-round">add_a_photo</span>
+        </button>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        memory_wall_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">MemoryWallScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Grid de memórias com fotos e legendas</span>
+  <span class="cmt">// FAB para adicionar novas memórias</span>
+
+  <span class="cls">Widget</span> <span class="fn">build</span>(context) {
+    <span class="kw">return</span> <span class="cls">Scaffold</span>(
+      body: <span class="cls">GridView</span>.builder(
+        gridDelegate: <span class="cls">SliverGridDelegateWithFixed</span>
+          <span class="cls">CrossAxisCount</span>(
+            crossAxisCount: <span class="num">2</span>,
+            childAspectRatio: <span class="num">0.8</span>,
+        ),
+        itemBuilder: (ctx, i) =>
+          _buildMemoryCard(memories[i]),
+      ),
+      floatingActionButton: <span class="cls">FloatingActionButton</span>(
+        onPressed: () =>
+          _showAddMemoryDialog(context, relId),
+        child: <span class="cls">Icon</span>(Icons.add_a_photo),
+      ),
+    );
+  }
+
+  <span class="cls">Widget</span> <span class="fn">_buildMemoryCard</span>(memory) {
+    <span class="kw">return</span> <span class="cls">Container</span>(
+      decoration: <span class="cls">BondlyTheme</span>.glassDecoration(),
+      child: <span class="cls">Column</span>([
+        <span class="cls">Image</span>.network(memory[<span class="str">'image_url'</span>],
+          fit: <span class="cls">BoxFit</span>.cover),
+        <span class="cls">Text</span>(memory[<span class="str">'caption'</span>]),
+      ]),
+    );
+  }
+
+  <span class="kw">void</span> <span class="fn">_showAddMemoryDialog</span>() {
+    <span class="cmt">// AlertDialog com campos:</span>
+    <span class="cmt">// - URL da Imagem</span>
+    <span class="cmt">// - Legenda</span>
+    <span class="cmt">// Em produção: image picker + storage</span>
+  }
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SIMULATION -->
+<section id="simulation" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(45,212,191,0.15);">
+      <span class="material-icons-round" style="color:#2DD4BF;">theater_comedy</span>
+    </div>
+    <div>
+      <h2>Simulador de Diálogo</h2>
+      <span class="route-tag">/simulation</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen sim-bg">
+        <div class="sim-header">
+          <h3>Ensaie sua Conversa</h3>
+          <p>Simule como seu parceiro pode reagir. A IA fará o papel dele(a) e te ajudará a ajustar as palavras.</p>
+        </div>
+        <div class="sim-input-card">
+          <div style="font-size:16px;font-weight:700;">O que você pretende dizer?</div>
+          <textarea class="sim-textarea" placeholder='Ex: "Acho que você não está me dando atenção..."' disabled></textarea>
+          <button class="sim-btn">Iniciar Ensaio 🎭</button>
+        </div>
+        <div class="sim-result">
+          <div style="text-align:center;color:#2DD4BF;font-weight:700;font-size:13px;margin-bottom:20px;">Resultado do Ensaio</div>
+          <div style="font-weight:700;color:var(--text-muted);font-size:14px;">Reação Simulada do Parceiro:</div>
+          <div class="partner-bubble">"Entendo que você se sente assim... mas também estou sobrecarregado no trabalho. Podemos conversar com calma?"</div>
+          <div class="sim-feedback">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span class="material-icons-round" style="color:#818CF8;">psychology</span>
+              <span style="font-weight:700;">Tom: Defensivo-reflexivo</span>
+            </div>
+            <div style="font-weight:700;color:var(--text-muted);font-size:13px;">Análise de Impacto:</div>
+            <div style="color:white;font-size:14px;line-height:1.5;margin:8px 0 16px;">A frase pode soar acusatória. Considere reformular com foco nos seus sentimentos.</div>
+            <div style="font-weight:700;color:#818CF8;font-size:13px;">Sugestão do Coach:</div>
+            <div style="color:white;font-size:14px;line-height:1.5;margin-top:8px;">Tente: "Eu sinto falta de mais momentos juntos. Podemos encontrar um tempo para nós?"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        simulation_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">SimulationScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Simulador de conversas difíceis</span>
+  <span class="cmt">// IA simula reação do parceiro + dá feedback</span>
+
+  <span class="cls">ElevatedButton</span>(
+    onPressed: () {
+      ref.read(simulationProvider.notifier)
+        .<span class="fn">simulateMessage</span>(
+          message: text,
+          relationshipType: <span class="str">'casal'</span>,
+        );
+    },
+    style: background: <span class="cls">Color</span>(<span class="num">0xFF2DD4BF</span>),
+    child: <span class="cls">Text</span>(<span class="str">'Iniciar Ensaio 🎭'</span>),
+  ),
+}
+
+<span class="kw">class</span> <span class="cls">_SimulationResultView</span> {
+  <span class="cmt">// Resultado contém:</span>
+  result[<span class="str">'reacao_parceiro'</span>]   <span class="cmt">// Reação simulada</span>
+  result[<span class="str">'tom_detectado'</span>]     <span class="cmt">// Tom emocional</span>
+  result[<span class="str">'analise_impacto'</span>]   <span class="cmt">// Análise detalhada</span>
+  result[<span class="str">'sugestao_coach'</span>]    <span class="cmt">// Sugestão alternativa</span>
+  result[<span class="str">'conselho_rapido'</span>]   <span class="cmt">// Quick tip</span>
+}
+
+<span class="kw">class</span> <span class="cls">_SimulationHistory</span> {
+  <span class="cmt">// Lista de simulações anteriores</span>
+  <span class="cmt">// Card com mensagem + data</span>
+  <span class="cmt">// Tap para re-ver resultado</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CHALLENGES -->
+<section id="challenges" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(251,191,36,0.15);">
+      <span class="material-icons-round" style="color:#FBBF24;">emoji_events</span>
+    </div>
+    <div>
+      <h2>Desafios & Conquistas</h2>
+      <span class="route-tag">/challenges</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen challenges-bg">
+        <div class="challenges-hero">
+          <h3>Desafios & Conquistas</h3>
+          <span class="material-icons-round bg-icon">emoji_events</span>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn active">Ativos</button>
+          <button class="tab-btn">Conquistas</button>
+        </div>
+        <div class="challenges-content">
+          <div class="challenge-card">
+            <div class="top-row">
+              <span class="status-badge" style="background:rgba(96,165,250,0.1);color:#60A5FA;border:1px solid rgba(96,165,250,0.5);">Em Progresso</span>
+              <span class="points-badge">+50 pts</span>
+            </div>
+            <h4>7 Dias de Mensagens</h4>
+            <p>Enviem pelo menos uma mensagem carinhosa por dia durante 7 dias seguidos.</p>
+            <button class="challenge-action-btn" style="background:var(--primary);">Marcar como Concluído</button>
+          </div>
+          <div class="challenge-card">
+            <div class="top-row">
+              <span class="status-badge" style="background:rgba(156,163,175,0.1);color:#9CA3AF;border:1px solid rgba(156,163,175,0.5);">Disponível</span>
+              <span class="points-badge">+30 pts</span>
+            </div>
+            <h4>Date Night Surpresa</h4>
+            <p>Planeje uma noite especial surpresa para seu parceiro(a) esta semana.</p>
+            <button class="challenge-action-btn" style="background:rgba(255,255,255,0.1);">Aceitar Desafio</button>
+          </div>
+          <div class="challenge-card">
+            <div class="top-row">
+              <span class="status-badge" style="background:rgba(74,222,128,0.1);color:#4ADE80;border:1px solid rgba(74,222,128,0.5);">Concluído</span>
+              <span class="points-badge">+20 pts</span>
+            </div>
+            <h4>Carta de Gratidão</h4>
+            <p>Escreva uma carta expressando o que você mais valoriza no relacionamento.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        challenges_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">ChallengesScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// SliverAppBar com gradient + TabBar</span>
+  <span class="cmt">// 2 tabs: Ativos e Conquistas</span>
+
+  <span class="cls">SliverAppBar</span>(
+    expandedHeight: <span class="num">200</span>,
+    flexibleSpace: <span class="cls">FlexibleSpaceBar</span>(
+      title: <span class="cls">Text</span>(<span class="str">'Desafios & Conquistas'</span>),
+      background: <span class="cls">LinearGradient</span>(
+        colors: [<span class="num">#6366F1</span>, <span class="num">#8B5CF6</span>]),
+    ),
+  ),
+}
+
+<span class="kw">class</span> <span class="cls">_ChallengeCard</span> {
+  <span class="cmt">// Status: null → 'Aceitar Desafio'</span>
+  <span class="cmt">// Status: 'pending' → 'Marcar Concluído'</span>
+  <span class="cmt">// Status: 'completed' → Sem botão</span>
+  
+  <span class="cls">Row</span>([
+    <span class="cls">_StatusBadge</span>(status),
+    <span class="cls">Text</span>(<span class="str">'+\${points} pts'</span>,
+      color: Colors.amber),
+  ]),
+  <span class="cls">Text</span>(challenge[<span class="str">'title'</span>]),
+  <span class="cls">Text</span>(challenge[<span class="str">'description'</span>]),
+  <span class="cls">ElevatedButton</span>(onPressed: onAction),
+}
+
+<span class="kw">class</span> <span class="cls">_AchievementsList</span> {
+  <span class="cmt">// Grid 2x2 de conquistas</span>
+  <span class="cmt">// Ícone de troféu dourado</span>
+  <span class="cmt">// Nome + pontos</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- DATE PLANNER -->
+<section id="dateplanner" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(251,146,60,0.15);">
+      <span class="material-icons-round" style="color:#FB923C;">wine_bar</span>
+    </div>
+    <div>
+      <h2>Planejador de Date Nights</h2>
+      <span class="route-tag">/date-planner</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen date-bg">
+        <div class="date-header">
+          <h3>Sugestões de Hoje 🥂</h3>
+          <p>Baseado no clima recente de vocês, a IA selecionou estas experiências:</p>
+        </div>
+        <div class="date-card">
+          <span class="date-type-badge" style="background:rgba(96,165,250,0.1);color:#60A5FA;">🏠 EM CASA</span>
+          <h4>Noite de Massagem</h4>
+          <div class="desc">Preparem um ambiente aconchegante com velas e música. Revezem-se fazendo massagem nos pés e ombros.</div>
+          <div class="date-why">
+            <span class="material-icons-round" style="font-size:16px;color:#FB923C;">auto_fix_high</span>
+            <div>
+              <div class="why-label">Por que sugerimos?</div>
+              <div class="why-text">Vocês tiveram uma semana intensa. Contato físico reconecta e reduz o estresse.</div>
+            </div>
+          </div>
+        </div>
+        <div class="date-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="date-type-badge" style="background:rgba(74,222,128,0.1);color:#4ADE80;">🚗 RUA</span>
+            <span class="material-icons-round" style="color:#FBBF24;font-size:16px;">star</span>
+          </div>
+          <h4>Jantar no Escuro</h4>
+          <div class="desc">Experimentem um jantar vendados! Preparem ou escolham pratos surpresa e sintam cada sabor sem ver.</div>
+          <div class="date-why">
+            <span class="material-icons-round" style="font-size:16px;color:#FB923C;">auto_fix_high</span>
+            <div>
+              <div class="why-label">Por que sugerimos?</div>
+              <div class="why-text">Experiências sensoriais criam memórias fortes e risadas compartilhadas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        date_planner_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">DatePlannerScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Sugestões de dates geradas por IA</span>
+  <span class="cmt">// Baseadas no humor e métricas do casal</span>
+
+  <span class="ann">@override</span>
+  <span class="kw">void</span> <span class="fn">initState</span>() {
+    ref.read(dateProvider.notifier)
+      .fetchSuggestions(relationshipId);
+  }
+
+  <span class="cls">Widget</span> <span class="fn">_buildDateCard</span>(suggestion) {
+    <span class="kw">final</span> isCasa = suggestion[<span class="str">'tipo'</span>] == <span class="str">'casa'</span>;
+    <span class="kw">final</span> isPremium = suggestion[<span class="str">'premium'</span>];
+
+    <span class="kw">return</span> <span class="cls">Container</span>(
+      decoration: <span class="cls">BondlyTheme</span>.glassDecoration(),
+      child: <span class="cls">Column</span>([
+        <span class="cmt">// Badge: 🏠 EM CASA ou 🚗 RUA</span>
+        <span class="cls">Row</span>([
+          <span class="cls">Text</span>(isCasa ? <span class="str">'🏠 EM CASA'</span> : <span class="str">'🚗 RUA'</span>),
+          <span class="kw">if</span> (isPremium)
+            <span class="cls">Icon</span>(Icons.star, color: amber),
+        ]),
+        <span class="cls">Text</span>(suggestion[<span class="str">'titulo'</span>]),
+        <span class="cls">Text</span>(suggestion[<span class="str">'descricao'</span>]),
+        <span class="cmt">// Seção "Por que sugerimos?"</span>
+        <span class="cls">Container</span>(child: <span class="cls">Row</span>([
+          <span class="cls">Icon</span>(Icons.auto_fix_high),
+          <span class="cls">Text</span>(<span class="str">'POR QUE SUGERIMOS?'</span>),
+          <span class="cls">Text</span>(suggestion[<span class="str">'por_que'</span>]),
+        ])),
+      ]),
+    );
+  }
+
+  <span class="cmt">// Loading state com texto animado:</span>
+  <span class="cmt">// "Bondly IA está criando momentos..."</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- QUESTIONS -->
+<section id="questions" class="screen-section">
+  <div class="screen-header">
+    <div class="icon-circle" style="background:rgba(251,146,60,0.15);">
+      <span class="material-icons-round" style="color:#FB923C;">auto_awesome</span>
+    </div>
+    <div>
+      <h2>Conexão Diária (Perguntas)</h2>
+      <span class="route-tag">/questions</span>
+    </div>
+  </div>
+  <div class="phone-and-code">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen questions-bg">
+        <span class="q-icon material-icons-round">auto_awesome</span>
+        <div class="q-text">Qual é a coisa mais simples que seu parceiro faz que te faz sorrir?</div>
+        <textarea class="q-answer-input" placeholder="Sua resposta honesta..." rows="4" disabled></textarea>
+        <button class="q-submit-btn">Enviar de Coração</button>
+        <div style="margin-top:40px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.5);font-size:14px;">A resposta será revelada quando ambos responderem ✨</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="dot" style="background:#FF5F56;"></span>
+        <span class="dot" style="background:#FFBD2E;"></span>
+        <span class="dot" style="background:#27C93F;"></span>
+        questions_screen.dart
+      </div>
+      <pre><span class="kw">class</span> <span class="cls">QuestionsScreen</span> <span class="kw">extends</span> <span class="cls">ConsumerStatefulWidget</span> {
+  <span class="cmt">// Pergunta diária para o casal</span>
+  <span class="cmt">// Respostas reveladas quando ambos respondem</span>
+
+  <span class="cmt">// Background: gradient Indigo → Violet</span>
+  <span class="cls">Container</span>(
+    decoration: <span class="cls">BoxDecoration</span>(
+      gradient: <span class="cls">LinearGradient</span>(
+        colors: [<span class="num">#4F46E5</span>, <span class="num">#7C3AED</span>]),
+    ),
+  ),
+
+  <span class="cmt">// Fluxo:</span>
+  <span class="cmt">// 1. Mostrar pergunta do dia</span>
+  <span class="cmt">// 2. Input de resposta</span>
+  <span class="cmt">// 3. Enviar → Estado de espera</span>
+  <span class="cmt">// 4. Quando ambos respondem → Revelação</span>
+
+  <span class="cls">Widget</span> <span class="fn">_buildRevealState</span>(state) {
+    <span class="kw">return</span> <span class="cls">Column</span>([
+      <span class="cmt">// ✅ "Sua resposta foi enviada!"</span>
+      <span class="cmt">// Texto da própria resposta</span>
+
+      <span class="kw">if</span> (partnerAnswer == <span class="kw">null</span>)
+        _buildWaitingPartner()
+        <span class="cmt">// ⏳ "Aguardando resposta..."</span>
+      <span class="kw">else</span>
+        _buildPartnerAnswer(answer)
+        <span class="cmt">// ✨ "Revelado!"</span>
+        <span class="cmt">// Card branco com resposta do parceiro</span>
+    ]);
+  }
+
+  <span class="cls">ElevatedButton</span>(
+    style: background: Colors.white,
+    foregroundColor: <span class="cls">Color</span>(<span class="num">0xFF4F46E5</span>),
+    child: <span class="cls">Text</span>(<span class="str">'Enviar de Coração'</span>),
+  ),
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section class="footer">
+  <p>
+    <strong>Bondly</strong> — AI Relationship Coach<br>
+    Flutter + Riverpod + NestJS + Supabase + OpenAI<br><br>
+    <span style="font-size:12px;">Frontend Overview gerado em 18/03/2026</span>
+  </p>
+</section>
+
+<script>
+function scrollToScreen(id) {
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Update nav on scroll
+const sections = document.querySelectorAll('.screen-section, .arch-section');
+const navBtns = document.querySelectorAll('.nav-btn');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navBtns.forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick')?.includes(current));
+  });
+});
+</script>
+</body>
+</html>
